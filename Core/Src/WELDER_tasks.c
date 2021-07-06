@@ -1456,7 +1456,7 @@ void vIndicatorPanel_Out(void *pvParameters)
 	WelderUnit.Xf = 30;
 	WelderUnit.Steps = 0;
 	WelderUnit.Delay_s = 10;
-	WelderUnit.Speed = 600;
+	WelderUnit.Speed = 120;
 	WelderUnit.Delay_f = 20;
 	WelderUnit.Program = 4;
 

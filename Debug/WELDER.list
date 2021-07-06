@@ -6830,125 +6830,126 @@ void vIndicatorPanel_Out(void *pvParameters)
  8002f9e:	4b29      	ldr	r3, [pc, #164]	; (8003044 <vIndicatorPanel_Out+0xc0>)
  8002fa0:	220a      	movs	r2, #10
  8002fa2:	729a      	strb	r2, [r3, #10]
-	WelderUnit.Speed = 600;
+	WelderUnit.Speed = 120;
  8002fa4:	4b27      	ldr	r3, [pc, #156]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002fa6:	f44f 7216 	mov.w	r2, #600	; 0x258
- 8002faa:	80da      	strh	r2, [r3, #6]
+ 8002fa6:	2278      	movs	r2, #120	; 0x78
+ 8002fa8:	80da      	strh	r2, [r3, #6]
 	WelderUnit.Delay_f = 20;
- 8002fac:	4b25      	ldr	r3, [pc, #148]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002fae:	2214      	movs	r2, #20
- 8002fb0:	72da      	strb	r2, [r3, #11]
+ 8002faa:	4b26      	ldr	r3, [pc, #152]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002fac:	2214      	movs	r2, #20
+ 8002fae:	72da      	strb	r2, [r3, #11]
 	WelderUnit.Program = 4;
- 8002fb2:	4b24      	ldr	r3, [pc, #144]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002fb4:	2204      	movs	r2, #4
- 8002fb6:	819a      	strh	r2, [r3, #12]
+ 8002fb0:	4b24      	ldr	r3, [pc, #144]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002fb2:	2204      	movs	r2, #4
+ 8002fb4:	819a      	strh	r2, [r3, #12]
 
 	WelderUnit.GoTo = WelderUnit.Xf;
- 8002fb8:	4b22      	ldr	r3, [pc, #136]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002fba:	885a      	ldrh	r2, [r3, #2]
- 8002fbc:	4b21      	ldr	r3, [pc, #132]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002fbe:	811a      	strh	r2, [r3, #8]
+ 8002fb6:	4b23      	ldr	r3, [pc, #140]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002fb8:	885a      	ldrh	r2, [r3, #2]
+ 8002fba:	4b22      	ldr	r3, [pc, #136]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002fbc:	811a      	strh	r2, [r3, #8]
 	WelderUnit.Position = 0;
- 8002fc0:	4b20      	ldr	r3, [pc, #128]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002fc2:	2200      	movs	r2, #0
- 8002fc4:	809a      	strh	r2, [r3, #4]
+ 8002fbe:	4b21      	ldr	r3, [pc, #132]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002fc0:	2200      	movs	r2, #0
+ 8002fc2:	809a      	strh	r2, [r3, #4]
 	WelderUnit.State = 0;
- 8002fc6:	4b1f      	ldr	r3, [pc, #124]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002fc8:	2200      	movs	r2, #0
- 8002fca:	741a      	strb	r2, [r3, #16]
+ 8002fc4:	4b1f      	ldr	r3, [pc, #124]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002fc6:	2200      	movs	r2, #0
+ 8002fc8:	741a      	strb	r2, [r3, #16]
 
 	WelderUnit.IndicatorPanel.Brightness = 2;
- 8002fcc:	4b1d      	ldr	r3, [pc, #116]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002fce:	2202      	movs	r2, #2
- 8002fd0:	771a      	strb	r2, [r3, #28]
+ 8002fca:	4b1e      	ldr	r3, [pc, #120]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002fcc:	2202      	movs	r2, #2
+ 8002fce:	771a      	strb	r2, [r3, #28]
 
 //	WelderUnit.IndicatorPanel.LEDsState |= LED_AUTO;
 //
 //	WelderUnit.IndicatorPanel.LEDsState |= LED_PARKING;
 
 	IndicatorPanel_Ini();
- 8002fd2:	f7fd fd71 	bl	8000ab8 <IndicatorPanel_Ini>
+ 8002fd0:	f7fd fd72 	bl	8000ab8 <IndicatorPanel_Ini>
 
 	IndicatorPanel_SetBrightness(&WelderUnit.IndicatorPanel);
- 8002fd6:	481c      	ldr	r0, [pc, #112]	; (8003048 <vIndicatorPanel_Out+0xc4>)
- 8002fd8:	f7fd fe3a 	bl	8000c50 <IndicatorPanel_SetBrightness>
+ 8002fd4:	481c      	ldr	r0, [pc, #112]	; (8003048 <vIndicatorPanel_Out+0xc4>)
+ 8002fd6:	f7fd fe3b 	bl	8000c50 <IndicatorPanel_SetBrightness>
 
 	vTaskDelay(100 / portTICK_RATE_MS);
- 8002fdc:	2064      	movs	r0, #100	; 0x64
- 8002fde:	f004 fe25 	bl	8007c2c <vTaskDelay>
+ 8002fda:	2064      	movs	r0, #100	; 0x64
+ 8002fdc:	f004 fe26 	bl	8007c2c <vTaskDelay>
 
 
 	SaveProgramToFlash2();
- 8002fe2:	f7fe f86b 	bl	80010bc <SaveProgramToFlash2>
+ 8002fe0:	f7fe f86c 	bl	80010bc <SaveProgramToFlash2>
 
 		//PCB_LEDs_OUT(PCB_LEDs_OUT(LEDs_val))
 
 
 
 		if (WelderUnit.State & 0x01) // Если каретка в движении то отображать ее позицию
- 8002fe6:	4b17      	ldr	r3, [pc, #92]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002fe8:	7c1b      	ldrb	r3, [r3, #16]
- 8002fea:	f003 0301 	and.w	r3, r3, #1
- 8002fee:	2b00      	cmp	r3, #0
- 8002ff0:	d003      	beq.n	8002ffa <vIndicatorPanel_Out+0x76>
+ 8002fe4:	4b17      	ldr	r3, [pc, #92]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002fe6:	7c1b      	ldrb	r3, [r3, #16]
+ 8002fe8:	f003 0301 	and.w	r3, r3, #1
+ 8002fec:	2b00      	cmp	r3, #0
+ 8002fee:	d003      	beq.n	8002ff8 <vIndicatorPanel_Out+0x74>
 		{
 			WelderUnit.IndicatorPanel.Xs = WelderUnit.Position;
- 8002ff2:	4b14      	ldr	r3, [pc, #80]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002ff4:	889a      	ldrh	r2, [r3, #4]
- 8002ff6:	4b13      	ldr	r3, [pc, #76]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002ff8:	825a      	strh	r2, [r3, #18]
+ 8002ff0:	4b14      	ldr	r3, [pc, #80]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002ff2:	889a      	ldrh	r2, [r3, #4]
+ 8002ff4:	4b13      	ldr	r3, [pc, #76]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002ff6:	825a      	strh	r2, [r3, #18]
 		}
 
 		if (!(WelderUnit.State & 0x01)) // Если каретка не в движении то отображать точку начала варки
- 8002ffa:	4b12      	ldr	r3, [pc, #72]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8002ffc:	7c1b      	ldrb	r3, [r3, #16]
- 8002ffe:	f003 0301 	and.w	r3, r3, #1
- 8003002:	2b00      	cmp	r3, #0
- 8003004:	d103      	bne.n	800300e <vIndicatorPanel_Out+0x8a>
+ 8002ff8:	4b12      	ldr	r3, [pc, #72]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8002ffa:	7c1b      	ldrb	r3, [r3, #16]
+ 8002ffc:	f003 0301 	and.w	r3, r3, #1
+ 8003000:	2b00      	cmp	r3, #0
+ 8003002:	d103      	bne.n	800300c <vIndicatorPanel_Out+0x88>
 		{
 			WelderUnit.IndicatorPanel.Xs = WelderUnit.Xs;
- 8003006:	4b0f      	ldr	r3, [pc, #60]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8003008:	881a      	ldrh	r2, [r3, #0]
- 800300a:	4b0e      	ldr	r3, [pc, #56]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 800300c:	825a      	strh	r2, [r3, #18]
+ 8003004:	4b0f      	ldr	r3, [pc, #60]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8003006:	881a      	ldrh	r2, [r3, #0]
+ 8003008:	4b0e      	ldr	r3, [pc, #56]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 800300a:	825a      	strh	r2, [r3, #18]
 		}
 
 		WelderUnit.IndicatorPanel.Xf = WelderUnit.Xf;
- 800300e:	4b0d      	ldr	r3, [pc, #52]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8003010:	885a      	ldrh	r2, [r3, #2]
- 8003012:	4b0c      	ldr	r3, [pc, #48]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8003014:	829a      	strh	r2, [r3, #20]
+ 800300c:	4b0d      	ldr	r3, [pc, #52]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 800300e:	885a      	ldrh	r2, [r3, #2]
+ 8003010:	4b0c      	ldr	r3, [pc, #48]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8003012:	829a      	strh	r2, [r3, #20]
 		WelderUnit.IndicatorPanel.Delay_s = WelderUnit.Delay_s;
- 8003016:	4b0b      	ldr	r3, [pc, #44]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8003018:	7a9a      	ldrb	r2, [r3, #10]
- 800301a:	4b0a      	ldr	r3, [pc, #40]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 800301c:	759a      	strb	r2, [r3, #22]
+ 8003014:	4b0b      	ldr	r3, [pc, #44]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8003016:	7a9a      	ldrb	r2, [r3, #10]
+ 8003018:	4b0a      	ldr	r3, [pc, #40]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 800301a:	759a      	strb	r2, [r3, #22]
 		WelderUnit.IndicatorPanel.Speed = WelderUnit.Speed;
- 800301e:	4b09      	ldr	r3, [pc, #36]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8003020:	88da      	ldrh	r2, [r3, #6]
- 8003022:	4b08      	ldr	r3, [pc, #32]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8003024:	831a      	strh	r2, [r3, #24]
+ 800301c:	4b09      	ldr	r3, [pc, #36]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 800301e:	88da      	ldrh	r2, [r3, #6]
+ 8003020:	4b08      	ldr	r3, [pc, #32]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8003022:	831a      	strh	r2, [r3, #24]
 		WelderUnit.IndicatorPanel.Delay_f = WelderUnit.Delay_f;
- 8003026:	4b07      	ldr	r3, [pc, #28]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8003028:	7ada      	ldrb	r2, [r3, #11]
- 800302a:	4b06      	ldr	r3, [pc, #24]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 800302c:	75da      	strb	r2, [r3, #23]
+ 8003024:	4b07      	ldr	r3, [pc, #28]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8003026:	7ada      	ldrb	r2, [r3, #11]
+ 8003028:	4b06      	ldr	r3, [pc, #24]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 800302a:	75da      	strb	r2, [r3, #23]
 		WelderUnit.IndicatorPanel.Program = WelderUnit.Program;
- 800302e:	4b05      	ldr	r3, [pc, #20]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8003030:	899a      	ldrh	r2, [r3, #12]
- 8003032:	4b04      	ldr	r3, [pc, #16]	; (8003044 <vIndicatorPanel_Out+0xc0>)
- 8003034:	835a      	strh	r2, [r3, #26]
+ 800302c:	4b05      	ldr	r3, [pc, #20]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 800302e:	899a      	ldrh	r2, [r3, #12]
+ 8003030:	4b04      	ldr	r3, [pc, #16]	; (8003044 <vIndicatorPanel_Out+0xc0>)
+ 8003032:	835a      	strh	r2, [r3, #26]
 
 
 		IndicatorPanel_SetValue(&WelderUnit.IndicatorPanel);
- 8003036:	4804      	ldr	r0, [pc, #16]	; (8003048 <vIndicatorPanel_Out+0xc4>)
- 8003038:	f7fd fd58 	bl	8000aec <IndicatorPanel_SetValue>
+ 8003034:	4804      	ldr	r0, [pc, #16]	; (8003048 <vIndicatorPanel_Out+0xc4>)
+ 8003036:	f7fd fd59 	bl	8000aec <IndicatorPanel_SetValue>
 
 		vTaskDelay(100 / portTICK_RATE_MS);
- 800303c:	2064      	movs	r0, #100	; 0x64
- 800303e:	f004 fdf5 	bl	8007c2c <vTaskDelay>
+ 800303a:	2064      	movs	r0, #100	; 0x64
+ 800303c:	f004 fdf6 	bl	8007c2c <vTaskDelay>
 		if (WelderUnit.State & 0x01) // Если каретка в движении то отображать ее позицию
- 8003042:	e7d0      	b.n	8002fe6 <vIndicatorPanel_Out+0x62>
+ 8003040:	e7d0      	b.n	8002fe4 <vIndicatorPanel_Out+0x60>
+ 8003042:	bf00      	nop
  8003044:	20003d3c 	.word	0x20003d3c
  8003048:	20003d4e 	.word	0x20003d4e
 
