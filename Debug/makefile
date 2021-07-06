@@ -65,8 +65,8 @@ all: main-build
 main-build: WELDER.elf secondary-outputs
 
 # Tool invocations
-WELDER.elf: $(OBJS) $(USER_OBJS) C:\WELDER\STM32CubeIDE\WELDER_v1_01\STM32F103RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "WELDER.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\WELDER\STM32CubeIDE\WELDER_v1_01\STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="WELDER.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+WELDER.elf: $(OBJS) $(USER_OBJS) C:\PROJECTS\WELDER\STM32F103RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "WELDER.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"C:\PROJECTS\WELDER\STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="WELDER.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
