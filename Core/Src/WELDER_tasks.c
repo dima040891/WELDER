@@ -1477,7 +1477,7 @@ void vIndicatorPanel_Out(void *pvParameters)
 	vTaskDelay(100 / portTICK_RATE_MS);
 
 
-	SaveProgramToFlash2();
+//	SaveProgramToFlash2();
 
 	for(;;)
 	{
