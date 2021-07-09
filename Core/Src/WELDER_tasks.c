@@ -659,7 +659,7 @@ void vCarriage_GoTo(void *pvParameters)
 		if (lReceivedValue == Cmd_CarriageGoTo)
 		{
 
-		WelderUnit.Position = WelderUnit.Steps * DISTANCE_PER_ROTATE / STEPS_PER_ROTATE; // Вычисление текущей позиции каретки, мм
+		WelderUnit.Position = WelderUnit.Steps * DISTANCE_PER_ROTATE / (STEPS_PER_ROTATE * MICRO_STEP_DEV); // Вычисление текущей позиции каретки, мм
 
 		dX = WelderUnit.GoTo - WelderUnit.Position; // Определение сколько и в какую сторону нужно сдвинуть каретку
 

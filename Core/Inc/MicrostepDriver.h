@@ -4,7 +4,7 @@
 #include "main.h"
 #include "PCB_WELDER.h"
 
-#define MICRO_STEP_DEV 1 // Режим микрошага драйвера ШД (1, 2, 4, 8, 16 ...)
+#define MICRO_STEP_DEV 4 // Режим микрошага драйвера ШД (1, 2, 4, 8, 16 ...)
 
 
 extern TIM_HandleTypeDef htim3;
