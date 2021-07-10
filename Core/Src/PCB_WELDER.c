@@ -38,6 +38,12 @@ void IndicatorPanel_SetValue (IndicatorValues *IndicatorPanel0)
 	IndicatorPanel_offset_2dig(num, &STLED_digVal[2]);
 	STLED316S_OutData(STLED_digVal, 4, oSTLED316S_STB5_GPIO_Port, oSTLED316S_STB5_Pin);
 
+//	LEDsOut = 0x80;
+//
+//	STLED316S_Direct_Single_Out(&LEDsOut, 4, oSTLED316S_STB5_GPIO_Port, oSTLED316S_STB5_Pin); // Вывод точки для Delay_f
+//
+//	LEDsOut = 0x00;
+
 	// Индикаторы "СКОРОСТЬ" (ст. 3 разряда) и "ПРОГРАММА" (мл. 3 разряда)
 	num = separate(IndicatorPanel0->Speed, &STLED_digVal[0]);
 	IndicatorPanel_offset_3dig(num, &STLED_digVal[0]);

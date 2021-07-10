@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  00020010  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0001bcf4  00000000  00000000  00020039  2**0
+ 12 .debug_info   0001bcf9  00000000  00000000  00020039  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00003d38  00000000  00000000  0003bd2d  2**0
+ 13 .debug_abbrev 00003d49  00000000  00000000  0003bd32  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000015c8  00000000  00000000  0003fa68  2**3
+ 14 .debug_aranges 000015c8  00000000  00000000  0003fa80  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00001420  00000000  00000000  00041030  2**3
+ 15 .debug_ranges 00001420  00000000  00000000  00041048  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001b8bc  00000000  00000000  00042450  2**0
+ 16 .debug_macro  0001b8bc  00000000  00000000  00042468  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00018843  00000000  00000000  0005dd0c  2**0
+ 17 .debug_line   00018845  00000000  00000000  0005dd24  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000a2686  00000000  00000000  0007654f  2**0
+ 18 .debug_str    000a2686  00000000  00000000  00076569  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  00118bd5  2**0
+ 19 .comment      00000053  00000000  00000000  00118bef  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00005ac0  00000000  00000000  00118c28  2**2
+ 20 .debug_frame  00005ac0  00000000  00000000  00118c44  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -973,6 +973,9 @@ void IndicatorPanel_SetValue (IndicatorValues *IndicatorPanel0)
  8000b84:	2104      	movs	r1, #4
  8000b86:	482d      	ldr	r0, [pc, #180]	; (8000c3c <IndicatorPanel_SetValue+0x14c>)
  8000b88:	f000 fbf0 	bl	800136c <STLED316S_OutData>
+//	STLED316S_Direct_Single_Out(&LEDsOut, 4, oSTLED316S_STB5_GPIO_Port, oSTLED316S_STB5_Pin); // Вывод точки для Delay_f
+//
+//	LEDsOut = 0x00;
 
 	// Индикаторы "СКОРОСТЬ" (ст. 3 разряда) и "ПРОГРАММА" (мл. 3 разряда)
 	num = separate(IndicatorPanel0->Speed, &STLED_digVal[0]);
@@ -2150,41 +2153,61 @@ void ReadProgramFromFlash2()
  8001300:	20003d3c 	.word	0x20003d3c
 
 08001304 <STLED316S_Ini>:
+};
+
+
+
+void STLED316S_Ini (GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB)
+{
  8001304:	b580      	push	{r7, lr}
  8001306:	b082      	sub	sp, #8
  8001308:	af00      	add	r7, sp, #0
  800130a:	6078      	str	r0, [r7, #4]
  800130c:	460b      	mov	r3, r1
  800130e:	807b      	strh	r3, [r7, #2]
+
+	STLED316S_SetBrightness(7, STLED_PORT_STB, STLED_PIN_STB);
  8001310:	887b      	ldrh	r3, [r7, #2]
  8001312:	461a      	mov	r2, r3
  8001314:	6879      	ldr	r1, [r7, #4]
  8001316:	2007      	movs	r0, #7
  8001318:	f000 f8d6 	bl	80014c8 <STLED316S_SetBrightness>
+
+
+	STLED_TxData[0] = 0x0D; // Включить дисплей
  800131c:	4b11      	ldr	r3, [pc, #68]	; (8001364 <STLED316S_Ini+0x60>)
  800131e:	220d      	movs	r2, #13
  8001320:	701a      	strb	r2, [r3, #0]
+
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_RESET);
  8001322:	887b      	ldrh	r3, [r7, #2]
  8001324:	2200      	movs	r2, #0
  8001326:	4619      	mov	r1, r3
  8001328:	6878      	ldr	r0, [r7, #4]
  800132a:	f003 f8f4 	bl	8004516 <HAL_GPIO_WritePin>
+	DelayMicro(DELAY_US);
  800132e:	2005      	movs	r0, #5
  8001330:	f000 f984 	bl	800163c <DelayMicro>
+	HAL_SPI_Transmit(&hspi1, STLED_TxData, 1, 10000);
  8001334:	f242 7310 	movw	r3, #10000	; 0x2710
  8001338:	2201      	movs	r2, #1
  800133a:	490a      	ldr	r1, [pc, #40]	; (8001364 <STLED316S_Ini+0x60>)
  800133c:	480a      	ldr	r0, [pc, #40]	; (8001368 <STLED316S_Ini+0x64>)
  800133e:	f003 fd87 	bl	8004e50 <HAL_SPI_Transmit>
+	DelayMicro(DELAY_US);
  8001342:	2005      	movs	r0, #5
  8001344:	f000 f97a 	bl	800163c <DelayMicro>
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_SET);
  8001348:	887b      	ldrh	r3, [r7, #2]
  800134a:	2201      	movs	r2, #1
  800134c:	4619      	mov	r1, r3
  800134e:	6878      	ldr	r0, [r7, #4]
  8001350:	f003 f8e1 	bl	8004516 <HAL_GPIO_WritePin>
+	DelayMicro(DELAY_US);
  8001354:	2005      	movs	r0, #5
  8001356:	f000 f971 	bl	800163c <DelayMicro>
+
+}
  800135a:	bf00      	nop
  800135c:	3708      	adds	r7, #8
  800135e:	46bd      	mov	sp, r7
@@ -2194,6 +2217,10 @@ void ReadProgramFromFlash2()
  8001368:	2000461c 	.word	0x2000461c
 
 0800136c <STLED316S_OutData>:
+
+
+void STLED316S_OutData (uint8_t *data, uint8_t num, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB)
+{
  800136c:	b580      	push	{r7, lr}
  800136e:	b086      	sub	sp, #24
  8001370:	af00      	add	r7, sp, #0
@@ -2204,30 +2231,42 @@ void ReadProgramFromFlash2()
  800137a:	72fb      	strb	r3, [r7, #11]
  800137c:	4613      	mov	r3, r2
  800137e:	813b      	strh	r3, [r7, #8]
+	STLED_TxData[0] = 0x00; // Вывод с автоикрементом адреса
  8001380:	4b26      	ldr	r3, [pc, #152]	; (800141c <STLED316S_OutData+0xb0>)
  8001382:	2200      	movs	r2, #0
  8001384:	701a      	strb	r2, [r3, #0]
+
+	STLED_TxData[1] = 0x00;
  8001386:	4b25      	ldr	r3, [pc, #148]	; (800141c <STLED316S_OutData+0xb0>)
  8001388:	2200      	movs	r2, #0
  800138a:	705a      	strb	r2, [r3, #1]
+	STLED_TxData[2] = 0x00;
  800138c:	4b23      	ldr	r3, [pc, #140]	; (800141c <STLED316S_OutData+0xb0>)
  800138e:	2200      	movs	r2, #0
  8001390:	709a      	strb	r2, [r3, #2]
+	STLED_TxData[3] = 0x00;
  8001392:	4b22      	ldr	r3, [pc, #136]	; (800141c <STLED316S_OutData+0xb0>)
  8001394:	2200      	movs	r2, #0
  8001396:	70da      	strb	r2, [r3, #3]
+	STLED_TxData[4] = 0x00;
  8001398:	4b20      	ldr	r3, [pc, #128]	; (800141c <STLED316S_OutData+0xb0>)
  800139a:	2200      	movs	r2, #0
  800139c:	711a      	strb	r2, [r3, #4]
+	STLED_TxData[5] = 0x00;
  800139e:	4b1f      	ldr	r3, [pc, #124]	; (800141c <STLED316S_OutData+0xb0>)
  80013a0:	2200      	movs	r2, #0
  80013a2:	715a      	strb	r2, [r3, #5]
+	STLED_TxData[6] = 0x00;
  80013a4:	4b1d      	ldr	r3, [pc, #116]	; (800141c <STLED316S_OutData+0xb0>)
  80013a6:	2200      	movs	r2, #0
  80013a8:	719a      	strb	r2, [r3, #6]
+
+	for(uint8_t i = 0; i < num; i++)
  80013aa:	2300      	movs	r3, #0
  80013ac:	75fb      	strb	r3, [r7, #23]
  80013ae:	e00d      	b.n	80013cc <STLED316S_OutData+0x60>
+	{
+		STLED_TxData[i + 1] = code_digit[data[i]];
  80013b0:	7dfb      	ldrb	r3, [r7, #23]
  80013b2:	68fa      	ldr	r2, [r7, #12]
  80013b4:	4413      	add	r3, r2
@@ -2239,6 +2278,7 @@ void ReadProgramFromFlash2()
  80013c0:	5c51      	ldrb	r1, [r2, r1]
  80013c2:	4a16      	ldr	r2, [pc, #88]	; (800141c <STLED316S_OutData+0xb0>)
  80013c4:	54d1      	strb	r1, [r2, r3]
+	for(uint8_t i = 0; i < num; i++)
  80013c6:	7dfb      	ldrb	r3, [r7, #23]
  80013c8:	3301      	adds	r3, #1
  80013ca:	75fb      	strb	r3, [r7, #23]
@@ -2246,13 +2286,18 @@ void ReadProgramFromFlash2()
  80013ce:	7afb      	ldrb	r3, [r7, #11]
  80013d0:	429a      	cmp	r2, r3
  80013d2:	d3ed      	bcc.n	80013b0 <STLED316S_OutData+0x44>
+	}
+
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_RESET);
  80013d4:	893b      	ldrh	r3, [r7, #8]
  80013d6:	2200      	movs	r2, #0
  80013d8:	4619      	mov	r1, r3
  80013da:	6878      	ldr	r0, [r7, #4]
  80013dc:	f003 f89b 	bl	8004516 <HAL_GPIO_WritePin>
+	DelayMicro(DELAY_US);
  80013e0:	2005      	movs	r0, #5
  80013e2:	f000 f92b 	bl	800163c <DelayMicro>
+	HAL_SPI_Transmit(&hspi1, &STLED_TxData[0], num + 1, 10000);
  80013e6:	7afb      	ldrb	r3, [r7, #11]
  80013e8:	b29b      	uxth	r3, r3
  80013ea:	3301      	adds	r3, #1
@@ -2261,15 +2306,19 @@ void ReadProgramFromFlash2()
  80013f2:	490a      	ldr	r1, [pc, #40]	; (800141c <STLED316S_OutData+0xb0>)
  80013f4:	480b      	ldr	r0, [pc, #44]	; (8001424 <STLED316S_OutData+0xb8>)
  80013f6:	f003 fd2b 	bl	8004e50 <HAL_SPI_Transmit>
+	DelayMicro(DELAY_US);
  80013fa:	2005      	movs	r0, #5
  80013fc:	f000 f91e 	bl	800163c <DelayMicro>
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_SET);
  8001400:	893b      	ldrh	r3, [r7, #8]
  8001402:	2201      	movs	r2, #1
  8001404:	4619      	mov	r1, r3
  8001406:	6878      	ldr	r0, [r7, #4]
  8001408:	f003 f885 	bl	8004516 <HAL_GPIO_WritePin>
+	DelayMicro(DELAY_US);
  800140c:	2005      	movs	r0, #5
  800140e:	f000 f915 	bl	800163c <DelayMicro>
+}
  8001412:	bf00      	nop
  8001414:	3718      	adds	r7, #24
  8001416:	46bd      	mov	sp, r7
@@ -2280,6 +2329,12 @@ void ReadProgramFromFlash2()
  8001424:	2000461c 	.word	0x2000461c
 
 08001428 <STLED316S_Direct_Single_Out>:
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_SET);
+	DelayMicro(DELAY_US);
+}
+
+void STLED316S_Direct_Single_Out (uint8_t *data, uint8_t num, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB)
+{
  8001428:	b580      	push	{r7, lr}
  800142a:	b084      	sub	sp, #16
  800142c:	af00      	add	r7, sp, #0
@@ -2290,18 +2345,23 @@ void ReadProgramFromFlash2()
  8001436:	72fb      	strb	r3, [r7, #11]
  8001438:	4613      	mov	r3, r2
  800143a:	813b      	strh	r3, [r7, #8]
+	STLED_TxData[0] = 0x00;
  800143c:	4b20      	ldr	r3, [pc, #128]	; (80014c0 <STLED316S_Direct_Single_Out+0x98>)
  800143e:	2200      	movs	r2, #0
  8001440:	701a      	strb	r2, [r3, #0]
+	STLED_TxData[1] = 0x00;
  8001442:	4b1f      	ldr	r3, [pc, #124]	; (80014c0 <STLED316S_Direct_Single_Out+0x98>)
  8001444:	2200      	movs	r2, #0
  8001446:	705a      	strb	r2, [r3, #1]
+
+	STLED_TxData[0] |= 0x20; // Вывод значения без автоинкремента, в заданный разряд
  8001448:	4b1d      	ldr	r3, [pc, #116]	; (80014c0 <STLED316S_Direct_Single_Out+0x98>)
  800144a:	781b      	ldrb	r3, [r3, #0]
  800144c:	f043 0320 	orr.w	r3, r3, #32
  8001450:	b2da      	uxtb	r2, r3
  8001452:	4b1b      	ldr	r3, [pc, #108]	; (80014c0 <STLED316S_Direct_Single_Out+0x98>)
  8001454:	701a      	strb	r2, [r3, #0]
+	STLED_TxData[0] |= ((6-num) & 0x07); // В какой разряд выводить
  8001456:	4b1a      	ldr	r3, [pc, #104]	; (80014c0 <STLED316S_Direct_Single_Out+0x98>)
  8001458:	781b      	ldrb	r3, [r3, #0]
  800145a:	b25a      	sxtb	r2, r3
@@ -2316,31 +2376,41 @@ void ReadProgramFromFlash2()
  8001470:	b2da      	uxtb	r2, r3
  8001472:	4b13      	ldr	r3, [pc, #76]	; (80014c0 <STLED316S_Direct_Single_Out+0x98>)
  8001474:	701a      	strb	r2, [r3, #0]
+
+	STLED_TxData[1] = *data; // Выводимое значение
  8001476:	68fb      	ldr	r3, [r7, #12]
  8001478:	781a      	ldrb	r2, [r3, #0]
  800147a:	4b11      	ldr	r3, [pc, #68]	; (80014c0 <STLED316S_Direct_Single_Out+0x98>)
  800147c:	705a      	strb	r2, [r3, #1]
+
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_RESET);
  800147e:	893b      	ldrh	r3, [r7, #8]
  8001480:	2200      	movs	r2, #0
  8001482:	4619      	mov	r1, r3
  8001484:	6878      	ldr	r0, [r7, #4]
  8001486:	f003 f846 	bl	8004516 <HAL_GPIO_WritePin>
+	DelayMicro(DELAY_US);
  800148a:	2005      	movs	r0, #5
  800148c:	f000 f8d6 	bl	800163c <DelayMicro>
+	HAL_SPI_Transmit(&hspi1, &STLED_TxData[0], 2, 10000);
  8001490:	f242 7310 	movw	r3, #10000	; 0x2710
  8001494:	2202      	movs	r2, #2
  8001496:	490a      	ldr	r1, [pc, #40]	; (80014c0 <STLED316S_Direct_Single_Out+0x98>)
  8001498:	480a      	ldr	r0, [pc, #40]	; (80014c4 <STLED316S_Direct_Single_Out+0x9c>)
  800149a:	f003 fcd9 	bl	8004e50 <HAL_SPI_Transmit>
+	DelayMicro(DELAY_US);
  800149e:	2005      	movs	r0, #5
  80014a0:	f000 f8cc 	bl	800163c <DelayMicro>
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_SET);
  80014a4:	893b      	ldrh	r3, [r7, #8]
  80014a6:	2201      	movs	r2, #1
  80014a8:	4619      	mov	r1, r3
  80014aa:	6878      	ldr	r0, [r7, #4]
  80014ac:	f003 f833 	bl	8004516 <HAL_GPIO_WritePin>
+	DelayMicro(DELAY_US);
  80014b0:	2005      	movs	r0, #5
  80014b2:	f000 f8c3 	bl	800163c <DelayMicro>
+}
  80014b6:	bf00      	nop
  80014b8:	3710      	adds	r7, #16
  80014ba:	46bd      	mov	sp, r7
@@ -2350,6 +2420,10 @@ void ReadProgramFromFlash2()
  80014c4:	2000461c 	.word	0x2000461c
 
 080014c8 <STLED316S_SetBrightness>:
+
+
+void STLED316S_SetBrightness (uint8_t Bright, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB)
+{
  80014c8:	b580      	push	{r7, lr}
  80014ca:	b082      	sub	sp, #8
  80014cc:	af00      	add	r7, sp, #0
@@ -2358,21 +2432,29 @@ void ReadProgramFromFlash2()
  80014d2:	71fb      	strb	r3, [r7, #7]
  80014d4:	4613      	mov	r3, r2
  80014d6:	80bb      	strh	r3, [r7, #4]
+	STLED_TxData[0] = 0x10;
  80014d8:	4b26      	ldr	r3, [pc, #152]	; (8001574 <STLED316S_SetBrightness+0xac>)
  80014da:	2210      	movs	r2, #16
  80014dc:	701a      	strb	r2, [r3, #0]
+	STLED_TxData[1] = 0xE5; // E5 - LSB2:0 - кол разряд (0b101 = 6 разрадам), LSB4:3 - режим яркости, LSB7:5 - яркость
  80014de:	4b25      	ldr	r3, [pc, #148]	; (8001574 <STLED316S_SetBrightness+0xac>)
  80014e0:	22e5      	movs	r2, #229	; 0xe5
  80014e2:	705a      	strb	r2, [r3, #1]
+
+	STLED_TxData[2] = 0x00;
  80014e4:	4b23      	ldr	r3, [pc, #140]	; (8001574 <STLED316S_SetBrightness+0xac>)
  80014e6:	2200      	movs	r2, #0
  80014e8:	709a      	strb	r2, [r3, #2]
+	STLED_TxData[3] = 0x00;
  80014ea:	4b22      	ldr	r3, [pc, #136]	; (8001574 <STLED316S_SetBrightness+0xac>)
  80014ec:	2200      	movs	r2, #0
  80014ee:	70da      	strb	r2, [r3, #3]
+	STLED_TxData[4] = 0x00;
  80014f0:	4b20      	ldr	r3, [pc, #128]	; (8001574 <STLED316S_SetBrightness+0xac>)
  80014f2:	2200      	movs	r2, #0
  80014f4:	711a      	strb	r2, [r3, #4]
+
+	STLED_TxData[2] = (Bright<<4) | (Bright);
  80014f6:	79fb      	ldrb	r3, [r7, #7]
  80014f8:	011b      	lsls	r3, r3, #4
  80014fa:	b25a      	sxtb	r2, r3
@@ -2382,6 +2464,7 @@ void ReadProgramFromFlash2()
  8001504:	b2da      	uxtb	r2, r3
  8001506:	4b1b      	ldr	r3, [pc, #108]	; (8001574 <STLED316S_SetBrightness+0xac>)
  8001508:	709a      	strb	r2, [r3, #2]
+	STLED_TxData[3] = (Bright<<4) | (Bright);
  800150a:	79fb      	ldrb	r3, [r7, #7]
  800150c:	011b      	lsls	r3, r3, #4
  800150e:	b25a      	sxtb	r2, r3
@@ -2391,6 +2474,7 @@ void ReadProgramFromFlash2()
  8001518:	b2da      	uxtb	r2, r3
  800151a:	4b16      	ldr	r3, [pc, #88]	; (8001574 <STLED316S_SetBrightness+0xac>)
  800151c:	70da      	strb	r2, [r3, #3]
+	STLED_TxData[4] = (Bright<<4) | (Bright);
  800151e:	79fb      	ldrb	r3, [r7, #7]
  8001520:	011b      	lsls	r3, r3, #4
  8001522:	b25a      	sxtb	r2, r3
@@ -2400,27 +2484,37 @@ void ReadProgramFromFlash2()
  800152c:	b2da      	uxtb	r2, r3
  800152e:	4b11      	ldr	r3, [pc, #68]	; (8001574 <STLED316S_SetBrightness+0xac>)
  8001530:	711a      	strb	r2, [r3, #4]
+
+
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_RESET);
  8001532:	88bb      	ldrh	r3, [r7, #4]
  8001534:	2200      	movs	r2, #0
  8001536:	4619      	mov	r1, r3
  8001538:	6838      	ldr	r0, [r7, #0]
  800153a:	f002 ffec 	bl	8004516 <HAL_GPIO_WritePin>
+	DelayMicro(DELAY_US);
  800153e:	2005      	movs	r0, #5
  8001540:	f000 f87c 	bl	800163c <DelayMicro>
+	HAL_SPI_Transmit(&hspi1, &STLED_TxData[0], 5, 10000);
  8001544:	f242 7310 	movw	r3, #10000	; 0x2710
  8001548:	2205      	movs	r2, #5
  800154a:	490a      	ldr	r1, [pc, #40]	; (8001574 <STLED316S_SetBrightness+0xac>)
  800154c:	480a      	ldr	r0, [pc, #40]	; (8001578 <STLED316S_SetBrightness+0xb0>)
  800154e:	f003 fc7f 	bl	8004e50 <HAL_SPI_Transmit>
+	DelayMicro(DELAY_US);
  8001552:	2005      	movs	r0, #5
  8001554:	f000 f872 	bl	800163c <DelayMicro>
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_SET);
  8001558:	88bb      	ldrh	r3, [r7, #4]
  800155a:	2201      	movs	r2, #1
  800155c:	4619      	mov	r1, r3
  800155e:	6838      	ldr	r0, [r7, #0]
  8001560:	f002 ffd9 	bl	8004516 <HAL_GPIO_WritePin>
+	DelayMicro(DELAY_US);
  8001564:	2005      	movs	r0, #5
  8001566:	f000 f869 	bl	800163c <DelayMicro>
+
+}
  800156a:	bf00      	nop
  800156c:	3708      	adds	r7, #8
  800156e:	46bd      	mov	sp, r7
@@ -2430,6 +2524,12 @@ void ReadProgramFromFlash2()
  8001578:	2000461c 	.word	0x2000461c
 
 0800157c <STLED316S_ReciveData>:
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_SET);
+	DelayMicro(DELAY_US);
+}
+
+void STLED316S_ReciveData (uint8_t *data, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB)
+{
  800157c:	b580      	push	{r7, lr}
  800157e:	b086      	sub	sp, #24
  8001580:	af00      	add	r7, sp, #0
@@ -2437,76 +2537,106 @@ void ReadProgramFromFlash2()
  8001584:	60b9      	str	r1, [r7, #8]
  8001586:	4613      	mov	r3, r2
  8001588:	80fb      	strh	r3, [r7, #6]
+	STLED_TxData[0] = 0x49;
  800158a:	4b29      	ldr	r3, [pc, #164]	; (8001630 <STLED316S_ReciveData+0xb4>)
  800158c:	2249      	movs	r2, #73	; 0x49
  800158e:	701a      	strb	r2, [r3, #0]
+	STLED_TxData[1] = 0x00;
  8001590:	4b27      	ldr	r3, [pc, #156]	; (8001630 <STLED316S_ReciveData+0xb4>)
  8001592:	2200      	movs	r2, #0
  8001594:	705a      	strb	r2, [r3, #1]
+	STLED_TxData[2] = 0x00;
  8001596:	4b26      	ldr	r3, [pc, #152]	; (8001630 <STLED316S_ReciveData+0xb4>)
  8001598:	2200      	movs	r2, #0
  800159a:	709a      	strb	r2, [r3, #2]
+	STLED_TxData[3] = 0x00;
  800159c:	4b24      	ldr	r3, [pc, #144]	; (8001630 <STLED316S_ReciveData+0xb4>)
  800159e:	2200      	movs	r2, #0
  80015a0:	70da      	strb	r2, [r3, #3]
+
+	STLED_Rx[0] = 0x49;
  80015a2:	4b24      	ldr	r3, [pc, #144]	; (8001634 <STLED316S_ReciveData+0xb8>)
  80015a4:	2249      	movs	r2, #73	; 0x49
  80015a6:	701a      	strb	r2, [r3, #0]
+	STLED_Rx[1] = 0x02;
  80015a8:	4b22      	ldr	r3, [pc, #136]	; (8001634 <STLED316S_ReciveData+0xb8>)
  80015aa:	2202      	movs	r2, #2
  80015ac:	705a      	strb	r2, [r3, #1]
+	STLED_Rx[2] = 0x02;
  80015ae:	4b21      	ldr	r3, [pc, #132]	; (8001634 <STLED316S_ReciveData+0xb8>)
  80015b0:	2202      	movs	r2, #2
  80015b2:	709a      	strb	r2, [r3, #2]
+	STLED_Rx[3] = 0x02;
  80015b4:	4b1f      	ldr	r3, [pc, #124]	; (8001634 <STLED316S_ReciveData+0xb8>)
  80015b6:	2202      	movs	r2, #2
  80015b8:	70da      	strb	r2, [r3, #3]
+
+	for(uint8_t i = 0; i < 8; i++)
  80015ba:	2300      	movs	r3, #0
  80015bc:	75fb      	strb	r3, [r7, #23]
  80015be:	e006      	b.n	80015ce <STLED316S_ReciveData+0x52>
+	{
+		STLED_Rx[i] = 0;
  80015c0:	7dfb      	ldrb	r3, [r7, #23]
  80015c2:	4a1c      	ldr	r2, [pc, #112]	; (8001634 <STLED316S_ReciveData+0xb8>)
  80015c4:	2100      	movs	r1, #0
  80015c6:	54d1      	strb	r1, [r2, r3]
+	for(uint8_t i = 0; i < 8; i++)
  80015c8:	7dfb      	ldrb	r3, [r7, #23]
  80015ca:	3301      	adds	r3, #1
  80015cc:	75fb      	strb	r3, [r7, #23]
  80015ce:	7dfb      	ldrb	r3, [r7, #23]
  80015d0:	2b07      	cmp	r3, #7
  80015d2:	d9f5      	bls.n	80015c0 <STLED316S_ReciveData+0x44>
+	}
+
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_RESET);
  80015d4:	88fb      	ldrh	r3, [r7, #6]
  80015d6:	2200      	movs	r2, #0
  80015d8:	4619      	mov	r1, r3
  80015da:	68b8      	ldr	r0, [r7, #8]
  80015dc:	f002 ff9b 	bl	8004516 <HAL_GPIO_WritePin>
+	DelayMicro(DELAY_US);
  80015e0:	2005      	movs	r0, #5
  80015e2:	f000 f82b 	bl	800163c <DelayMicro>
+	//SPI1->CR1 |= SPI_CR1_BIDIOE; // Перевод SPI в режим передачи
+	HAL_SPI_Transmit(&hspi1, STLED_TxData, 1, 1000);
  80015e6:	f44f 737a 	mov.w	r3, #1000	; 0x3e8
  80015ea:	2201      	movs	r2, #1
  80015ec:	4910      	ldr	r1, [pc, #64]	; (8001630 <STLED316S_ReciveData+0xb4>)
  80015ee:	4812      	ldr	r0, [pc, #72]	; (8001638 <STLED316S_ReciveData+0xbc>)
  80015f0:	f003 fc2e 	bl	8004e50 <HAL_SPI_Transmit>
+	//SPI1->CR1 &= ~SPI_CR1_BIDIOE; // // Перевод SPI в режим приема
+	//HAL_SPI_TransmitReceive(&hspi1, STLED_TxData, STLED_Rx, 1, 1000);
+	HAL_SPI_Receive(&hspi1, STLED_Rx, 2, 1000);
  80015f4:	f44f 737a 	mov.w	r3, #1000	; 0x3e8
  80015f8:	2202      	movs	r2, #2
  80015fa:	490e      	ldr	r1, [pc, #56]	; (8001634 <STLED316S_ReciveData+0xb8>)
  80015fc:	480e      	ldr	r0, [pc, #56]	; (8001638 <STLED316S_ReciveData+0xbc>)
  80015fe:	f003 fd63 	bl	80050c8 <HAL_SPI_Receive>
+	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_SET);
  8001602:	88fb      	ldrh	r3, [r7, #6]
  8001604:	2201      	movs	r2, #1
  8001606:	4619      	mov	r1, r3
  8001608:	68b8      	ldr	r0, [r7, #8]
  800160a:	f002 ff84 	bl	8004516 <HAL_GPIO_WritePin>
+	DelayMicro(DELAY_US);
  800160e:	2005      	movs	r0, #5
  8001610:	f000 f814 	bl	800163c <DelayMicro>
+
+	data[0] = STLED_Rx[0];
  8001614:	4b07      	ldr	r3, [pc, #28]	; (8001634 <STLED316S_ReciveData+0xb8>)
  8001616:	781a      	ldrb	r2, [r3, #0]
  8001618:	68fb      	ldr	r3, [r7, #12]
  800161a:	701a      	strb	r2, [r3, #0]
+	data[1]= STLED_Rx[1];
  800161c:	68fb      	ldr	r3, [r7, #12]
  800161e:	3301      	adds	r3, #1
  8001620:	4a04      	ldr	r2, [pc, #16]	; (8001634 <STLED316S_ReciveData+0xb8>)
  8001622:	7852      	ldrb	r2, [r2, #1]
  8001624:	701a      	strb	r2, [r3, #0]
+
+}
  8001626:	bf00      	nop
  8001628:	3718      	adds	r7, #24
  800162a:	46bd      	mov	sp, r7
@@ -2517,10 +2647,14 @@ void ReadProgramFromFlash2()
  8001638:	2000461c 	.word	0x2000461c
 
 0800163c <DelayMicro>:
+
+ void DelayMicro(uint32_t __IO micros)
+{
  800163c:	b480      	push	{r7}
  800163e:	b083      	sub	sp, #12
  8001640:	af00      	add	r7, sp, #0
  8001642:	6078      	str	r0, [r7, #4]
+  micros *=(SystemCoreClock/1000000)/5;
  8001644:	4b0a      	ldr	r3, [pc, #40]	; (8001670 <DelayMicro+0x34>)
  8001646:	681b      	ldr	r3, [r3, #0]
  8001648:	4a0a      	ldr	r2, [pc, #40]	; (8001674 <DelayMicro+0x38>)
@@ -2529,12 +2663,14 @@ void ReadProgramFromFlash2()
  8001650:	687a      	ldr	r2, [r7, #4]
  8001652:	fb02 f303 	mul.w	r3, r2, r3
  8001656:	607b      	str	r3, [r7, #4]
+  while(micros--);
  8001658:	bf00      	nop
  800165a:	687b      	ldr	r3, [r7, #4]
  800165c:	1e5a      	subs	r2, r3, #1
  800165e:	607a      	str	r2, [r7, #4]
  8001660:	2b00      	cmp	r3, #0
  8001662:	d1fa      	bne.n	800165a <DelayMicro+0x1e>
+}
  8001664:	bf00      	nop
  8001666:	bf00      	nop
  8001668:	370c      	adds	r7, #12
