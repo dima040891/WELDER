@@ -24,6 +24,16 @@ void IndicatorPanel_SetValue (IndicatorValues *IndicatorPanel0)
 	IndicatorPanel_offset_4dig(num, STLED_digVal);
 	STLED316S_OutData(STLED_digVal, 4, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
 
+//	STLED316S_Single_Out(&STLED_digVal[0], 1, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
+//	STLED316S_Single_Out(&STLED_digVal[1], 2, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
+//	STLED316S_Single_Out(&STLED_digVal[2], 3, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
+//	STLED316S_Single_Out(&STLED_digVal[3], 4, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
+//	STLED316S_Single_Out(&STLED_digVal[4], 5, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
+//	STLED316S_Single_Out(&STLED_digVal[5], 6, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
+//	STLED316S_Direct_Single_Out(&STLED_digVal[1], 2, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
+//	STLED316S_Direct_Single_Out(&STLED_digVal[2], 3, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
+//	STLED316S_Direct_Single_Out(&STLED_digVal[3], 4, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
+
 	//STLED316S_Single_Out(&gg, 5, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
 
 	// Индикатор "ВПРАВО"
@@ -289,7 +299,7 @@ void PCB_InputsScan (void)
 	if (HAL_GPIO_ReadPin(iPedal_R_GPIO_Port, iPedal_R_Pin)) // Если Нажата педаль для зажима правой части заготовки, то установить бит, иначе сбросить
 	{
 		WelderUnit.State |= WELDER_STATE_PEDAL_R;
-		Valve_R_OPEN
+		//Valve_R_OPEN
 	}
 	else
 	{

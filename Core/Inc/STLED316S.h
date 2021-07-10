@@ -41,8 +41,9 @@ void STLED316S_ReciveData (uint8_t *data, GPIO_TypeDef *STLED_PORT_STB, uint16_t
 
 void DelayMicro(uint32_t __IO micros);
 
-void STLED316S_Single_Out (uint8_t *data, uint8_t num, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB); // Вывод одночного числа в заддный разряд
+void STLED316S_Single_Out (uint8_t *data, uint8_t num, uint8_t DP, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB); // Вывод одночного числа в заддный разряд
 
 void STLED316S_Direct_Single_Out (uint8_t *data, uint8_t num, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB); // Прямой вывод значения на индкаторы (без таблицы знакогенератора)
+
 
 #endif

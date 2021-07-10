@@ -75,7 +75,7 @@ void STLED316S_OutData (uint8_t *data, uint8_t num, GPIO_TypeDef *STLED_PORT_STB
 	DelayMicro(DELAY_US);
 }
 
-void STLED316S_Single_Out (uint8_t *data, uint8_t num, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB)
+void STLED316S_Single_Out (uint8_t *data, uint8_t num, uint8_t DP, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB)
 {
 	STLED_TxData[0] = 0x00;
 	STLED_TxData[1] = 0x00;
@@ -88,6 +88,11 @@ void STLED316S_Single_Out (uint8_t *data, uint8_t num, GPIO_TypeDef *STLED_PORT_
 	for(uint8_t i = 0; i < num; i++)
 	{
 		STLED_TxData[i + 1] = code_digit[data[i]];
+
+		if(DP) // Вывод точки
+		{
+			STLED_TxData[i + 1] |= 0x80;
+		}
 	}
 
 	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_RESET);
@@ -115,7 +120,6 @@ void STLED316S_Direct_Single_Out (uint8_t *data, uint8_t num, GPIO_TypeDef *STLE
 	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_SET);
 	DelayMicro(DELAY_US);
 }
-
 
 void STLED316S_SetBrightness (uint8_t Bright, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB)
 {
