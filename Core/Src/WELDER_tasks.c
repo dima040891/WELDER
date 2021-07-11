@@ -30,7 +30,7 @@ void freeRTOS_Tasks_Ini (void)
 
 	MicrostepDriver_Ini();
 
-	xTaskCreate(vIndicatorPanel_Out, "IndicatorPanel_Out", 400, NULL, 2, NULL); // З-а вывода значений на панель
+	xTaskCreate(vIndicatorPanel_Out, "IndicatorPanel_Out", 500, NULL, 2, NULL); // З-а вывода значений на панель
 
 	xTaskCreate(vKeyScan, "KeyScan", 400, NULL, 2, NULL); // З-а опроса кнопок
 
@@ -1452,8 +1452,8 @@ void vKeyScan(void *pvParameters)
 
 void vIndicatorPanel_Out(void *pvParameters)
 {
-	WelderUnit.Xs = 10;
-	WelderUnit.Xf = 30;
+	WelderUnit.Xs = 123;
+	WelderUnit.Xf = 321;
 	WelderUnit.Steps = 0;
 	WelderUnit.Delay_s = 10;
 	WelderUnit.Speed = 120;

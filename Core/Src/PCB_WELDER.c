@@ -17,22 +17,21 @@ void IndicatorPanel_SetValue (IndicatorValues *IndicatorPanel0)
 
 	LEDsOut = 0;
 
+	for(uint8_t i = 0; i < 6; i++)
+	{
+		STLED_digVal[i] = 0;
+	}
+
 	//uint8_t gg = 11;
 
 	// Индикатор "ВЛЕВО"
 	num = separate(IndicatorPanel0->Xs,  &STLED_digVal[0]);
 	IndicatorPanel_offset_4dig(num, STLED_digVal);
 	STLED316S_OutData(STLED_digVal, 4, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
-
-//	STLED316S_Single_Out(&STLED_digVal[0], 1, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
-//	STLED316S_Single_Out(&STLED_digVal[1], 2, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
-//	STLED316S_Single_Out(&STLED_digVal[2], 3, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
-//	STLED316S_Single_Out(&STLED_digVal[3], 4, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
-//	STLED316S_Single_Out(&STLED_digVal[4], 5, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
-//	STLED316S_Single_Out(&STLED_digVal[5], 6, 0, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin);
-//	STLED316S_Direct_Single_Out(&STLED_digVal[1], 2, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
-//	STLED316S_Direct_Single_Out(&STLED_digVal[2], 3, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
-//	STLED316S_Direct_Single_Out(&STLED_digVal[3], 4, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
+//	for(uint8_t i = 0; i < 6; i++)
+//	{
+//		STLED_digVal[i] = 0;
+//	}
 
 	//STLED316S_Single_Out(&gg, 5, oSTLED316S_STB1_GPIO_Port, oSTLED316S_STB1_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
 
@@ -41,18 +40,24 @@ void IndicatorPanel_SetValue (IndicatorValues *IndicatorPanel0)
 	IndicatorPanel_offset_4dig(num, STLED_digVal);
 	STLED316S_OutData(STLED_digVal, 4, oSTLED316S_STB2_GPIO_Port, oSTLED316S_STB2_Pin);
 
+//		STLED316S_Single_Out(&STLED_digVal[3], 2, 0, oSTLED316S_STB2_GPIO_Port, oSTLED316S_STB2_Pin); //Прямой вывод значения (не числа) в нужный разряд идкатора
+//		STLED316S_Single_Out(&STLED_digVal[2], 3, 0, oSTLED316S_STB2_GPIO_Port, oSTLED316S_STB2_Pin);
+//		STLED316S_Single_Out(&STLED_digVal[1], 4, 0, oSTLED316S_STB2_GPIO_Port, oSTLED316S_STB2_Pin);
+//		STLED316S_Single_Out(&STLED_digVal[0], 5, 0, oSTLED316S_STB2_GPIO_Port, oSTLED316S_STB2_Pin);
+
+
 	// Вывод пред и пост задержки
 	num = separate(IndicatorPanel0->Delay_s, &STLED_digVal[0]);
-	IndicatorPanel_offset_2dig(num, &STLED_digVal[0]);
+	//IndicatorPanel_offset_2dig(num, &STLED_digVal[0]);
 	num = separate(IndicatorPanel0->Delay_f, &STLED_digVal[2]);
-	IndicatorPanel_offset_2dig(num, &STLED_digVal[2]);
-	STLED316S_OutData(STLED_digVal, 4, oSTLED316S_STB5_GPIO_Port, oSTLED316S_STB5_Pin);
+	//IndicatorPanel_offset_2dig(num, &STLED_digVal[2]);
+	//STLED316S_OutData(STLED_digVal, 4, oSTLED316S_STB5_GPIO_Port, oSTLED316S_STB5_Pin);
 
-//	LEDsOut = 0x80;
-//
-//	STLED316S_Direct_Single_Out(&LEDsOut, 4, oSTLED316S_STB5_GPIO_Port, oSTLED316S_STB5_Pin); // Вывод точки для Delay_f
-//
-//	LEDsOut = 0x00;
+	STLED316S_Single_Out(&STLED_digVal[0], 6, 1, oSTLED316S_STB5_GPIO_Port, oSTLED316S_STB5_Pin);
+	STLED316S_Single_Out(&STLED_digVal[1], 5, 0, oSTLED316S_STB5_GPIO_Port, oSTLED316S_STB5_Pin);
+	STLED316S_Single_Out(&STLED_digVal[2], 4, 1, oSTLED316S_STB5_GPIO_Port, oSTLED316S_STB5_Pin);
+	STLED316S_Single_Out(&STLED_digVal[3], 3, 0, oSTLED316S_STB5_GPIO_Port, oSTLED316S_STB5_Pin);
+
 
 	// Индикаторы "СКОРОСТЬ" (ст. 3 разряда) и "ПРОГРАММА" (мл. 3 разряда)
 	num = separate(IndicatorPanel0->Speed, &STLED_digVal[0]);

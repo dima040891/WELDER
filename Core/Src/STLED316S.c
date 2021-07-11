@@ -85,22 +85,20 @@ void STLED316S_Single_Out (uint8_t *data, uint8_t num, uint8_t DP, GPIO_TypeDef 
 
 	STLED_TxData[1] = *data; // Выводимое значение
 
-	for(uint8_t i = 0; i < num; i++)
-	{
-		STLED_TxData[i + 1] = code_digit[data[i]];
+
+		STLED_TxData[1] = code_digit[data[0]];
 
 		if(DP) // Вывод точки
 		{
-			STLED_TxData[i + 1] |= 0x80;
+			STLED_TxData[1] |= 0x80;
 		}
-	}
 
 	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_RESET);
 	DelayMicro(DELAY_US);
 	HAL_SPI_Transmit(&hspi1, &STLED_TxData[0], 2, 10000);
 	DelayMicro(DELAY_US);
 	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_SET);
-	DelayMicro(DELAY_US);
+	DelayMicro(DELAY_US + 100); // Без доп задержки 100 мкС зависает (Hard Fault)
 }
 
 void STLED316S_Direct_Single_Out (uint8_t *data, uint8_t num, GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB)
