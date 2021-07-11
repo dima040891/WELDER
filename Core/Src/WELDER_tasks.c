@@ -540,28 +540,27 @@ void vWelder_Run(void *pvParameters)
 		if (/*(lReceivedValue == Carriage_Done) ||*/ (WelderUnit.Position == WelderUnit.Xs)) // Если каретка на заданной позиции
 		{
 
-		Valve_L_CLOSE
-		Valve_R_OPEN
+
 		WELDER_HEAD_DOWN // Опустить головку
-		vTaskDelay(100 / portTICK_RATE_MS);
-		SYNC_ARC_ON
+		vTaskDelay(100 / portTICK_RATE_MS); // Ожидание опускания головки
+		SYNC_ARC_ON // Подача дуги
 
-		vTaskDelay(WelderUnit.Delay_s * 100 / portTICK_RATE_MS);
+		vTaskDelay(WelderUnit.Delay_s * 100 / portTICK_RATE_MS); // Выдержка времени для заполнения точки начала сварки аргоном.
 
-		WelderUnit.GoTo = WelderUnit.Xf;
+		WelderUnit.GoTo = WelderUnit.Xf; // Указание точки осановки головки
+		Carriage_cmd = Cmd_CarriageGoTo; // Команда на начала движение каретки
+		xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идти к
 
-		Carriage_cmd = Cmd_CarriageGoTo;
 
-		xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идити к
-
+		xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
 		xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки ханята
 
-		vTaskDelay(WelderUnit.Delay_f * 100 / portTICK_RATE_MS);
+		SYNC_ARC_OFF // Прекращение подачи дуги
 
-		SYNC_ARC_OFF
+		vTaskDelay(WelderUnit.Delay_f * 100 / portTICK_RATE_MS); // Выдержка времени для заполнения точки останова сварки аргоном.
 
 		beep = beep_3short;
-		xQueueSendToBack( qBeepMode, &beep, 0 ); // Звук
+		xQueueSendToBack( qBeepMode, &beep, 0 ); // Звук окончания варки
 
 		// Откат каретки
 
