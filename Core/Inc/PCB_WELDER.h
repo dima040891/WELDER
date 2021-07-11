@@ -95,16 +95,14 @@ void IndicatorPanel_offset_3dig (uint8_t num, uint8_t *dataArray); // Упако
 
 void Carriage_Move (uint16_t Speed, uint8_t Dir, uint8_t NumSM); // Движение каретки с заданной скоростью, мм/мин.
 
-void PCB_KeyScan (void);
+void PCB_KeyScan (void); // Опрос нажатия кнопок
 
-//void SaveProgramToFlash();
+void SaveProgramToFlash2(); // Сохранение текущех настроек во flash
 
-void SaveProgramToFlash2();
+void PCB_InputsScan (void); // Функция для опроса состояния входов платы. Вход основного концевика, концевика задней дверцы, вход подключенный к педалям
 
-void PCB_InputsScan (void);
+void ReadProgramFromFlash2(void); // Чтение текущех настроек из flash памяти
 
-void ReadProgramFromFlash2(void);
-
-void PCB_LEDs_OUT (uint8_t LEDs_val);
+void PCB_LEDs_OUT (uint8_t LEDs_val); // Управление светодиодами
 
 #endif

@@ -383,7 +383,7 @@ void vKey_Action(void *pvParameters)
 				{
 					xQueueSendToBack( qBeepMode, &beep_mode_send, 0 ); // Звук нажатия
 					WELDER_HEAD_UP // Поднять сварочную головку
-					WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация что головка однята
+					WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация что головка поднята
 					WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN; // Индикация что головка поднята
 					break;
 				}
@@ -532,8 +532,6 @@ void vWelder_Run(void *pvParameters)
 			xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идти к
 
 //			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
-//			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
-//			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
 			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки ханята
 		}
 
@@ -542,6 +540,8 @@ void vWelder_Run(void *pvParameters)
 
 
 		WELDER_HEAD_DOWN // Опустить головку
+		WelderUnit.IndicatorPanel.LEDsState |= LED_DOWN; // Индикация опущенной сварочной головки
+		WelderUnit.IndicatorPanel.LEDsState &= ~LED_UP;
 		vTaskDelay(100 / portTICK_RATE_MS); // Ожидание опускания головки
 		SYNC_ARC_ON // Подача дуги
 
@@ -561,6 +561,12 @@ void vWelder_Run(void *pvParameters)
 
 		beep = beep_3short;
 		xQueueSendToBack( qBeepMode, &beep, 0 ); // Звук окончания варки
+
+		WELDER_HEAD_UP // Поднять головку
+		vTaskDelay(100 / portTICK_RATE_MS); // Ожидание подъема головки
+
+		WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация поднятой сварочной головки
+		WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN;
 
 		// Откат каретки
 
@@ -600,12 +606,14 @@ void vCarriage_Calibration(void *pvParameters)
 	{
 		xQueueReceive(qWelderCalibrated, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки занята
 
-
-
 		if (lReceivedValue == Calibrated)
 		{
+
 			WELDER_HEAD_UP // Поднять головку
-			vTaskDelay(100 / portTICK_RATE_MS);
+			vTaskDelay(100 / portTICK_RATE_MS); // Ожидание подъема головки
+
+			WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация поднятой сварочной головки
+			WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN;
 
 			Carriage_Move(400, 0, 1); // Начать перемещение каретки в сторону концевика
 
