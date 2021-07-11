@@ -531,17 +531,19 @@ void vWelder_Run(void *pvParameters)
 			WelderUnit.GoTo = WelderUnit.Xs;
 			xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идти к
 
-			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Юез этого не работает. В очереди откуда то берутся данные
-			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Юез этого не работает. В очереди откуда то берутся данные
-			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Юез этого не работает. В очереди откуда то берутся данные
+//			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
+//			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
+//			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
 			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки ханята
 		}
 
-		if (lReceivedValue == Carriage_Done) // Если каретка на заданной позиции
+		if (/*(lReceivedValue == Carriage_Done) ||*/ (WelderUnit.Position == WelderUnit.Xs)) // Если каретка на заданной позиции
 		{
 
+		Valve_L_CLOSE
+		Valve_R_OPEN
 		WELDER_HEAD_DOWN // Опустить головку
-		vTaskDelay(WelderUnit.Delay_s * 100 / portTICK_RATE_MS);
+		vTaskDelay(100 / portTICK_RATE_MS);
 		SYNC_ARC_ON
 
 		vTaskDelay(WelderUnit.Delay_s * 100 / portTICK_RATE_MS);
@@ -1452,8 +1454,8 @@ void vKeyScan(void *pvParameters)
 
 void vIndicatorPanel_Out(void *pvParameters)
 {
-	WelderUnit.Xs = 123;
-	WelderUnit.Xf = 321;
+	WelderUnit.Xs = 30;
+	WelderUnit.Xf = 90;
 	WelderUnit.Steps = 0;
 	WelderUnit.Delay_s = 10;
 	WelderUnit.Speed = 120;
