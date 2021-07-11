@@ -47,7 +47,6 @@ void STLED316S_Ini (GPIO_TypeDef *STLED_PORT_STB, uint16_t STLED_PIN_STB)
 	DelayMicro(DELAY_US);
 	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_SET);
 	DelayMicro(DELAY_US);
-
 }
 
 
@@ -86,12 +85,12 @@ void STLED316S_Single_Out (uint8_t *data, uint8_t num, uint8_t DP, GPIO_TypeDef 
 	STLED_TxData[1] = *data; // Выводимое значение
 
 
-		STLED_TxData[1] = code_digit[data[0]];
+	STLED_TxData[1] = code_digit[data[0]];
 
-		if(DP) // Вывод точки
-		{
-			STLED_TxData[1] |= 0x80;
-		}
+	if(DP) // Вывод точки
+	{
+		STLED_TxData[1] |= 0x80;
+	}
 
 	HAL_GPIO_WritePin(STLED_PORT_STB, STLED_PIN_STB, GPIO_PIN_RESET);
 	DelayMicro(DELAY_US);
