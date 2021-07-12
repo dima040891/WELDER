@@ -66,7 +66,7 @@ void Error_Handler(void);
 #define oSol_Valve_a_Heade_GPIO_Port GPIOC
 #define iPedal_L_Pin GPIO_PIN_0
 #define iPedal_L_GPIO_Port GPIOA
-#define iPedal_R_Pin GPIO_PIN_2
+#define iPedal_R_Pin GPIO_PIN_3
 #define iPedal_R_GPIO_Port GPIOA
 #define oBuzer_Pin GPIO_PIN_4
 #define oBuzer_GPIO_Port GPIOA

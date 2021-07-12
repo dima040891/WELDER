@@ -280,23 +280,23 @@ void PCB_InputsScan (void)
 	if (HAL_GPIO_ReadPin(iPedal_L_GPIO_Port, iPedal_L_Pin)) // Если Нажата педаль для зажима левой части заготовки, то установить бит, иначе сбросить
 	{
 		WelderUnit.State |= WELDER_STATE_PEDAL_L;
-		Valve_L_OPEN
+		Valve_L_CLOSE
 	}
 	else
 	{
 		WelderUnit.State &= ~WELDER_STATE_PEDAL_L;
-		Valve_L_CLOSE
+		Valve_L_OPEN
 	}
 
 	if (HAL_GPIO_ReadPin(iPedal_R_GPIO_Port, iPedal_R_Pin)) // Если Нажата педаль для зажима правой части заготовки, то установить бит, иначе сбросить
 	{
 		WelderUnit.State |= WELDER_STATE_PEDAL_R;
-		//Valve_R_OPEN
+		Valve_R_CLOSE
 	}
 	else
 	{
 		WelderUnit.State &= ~WELDER_STATE_PEDAL_R;
-		Valve_R_CLOSE
+		Valve_R_OPEN
 	}
 
 	if (HAL_GPIO_ReadPin(iBackDoor_GPIO_Port, iBackDoor_Pin)) // Если задняя дверца закрыта, то установить бит, иначе сбросить

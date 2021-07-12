@@ -23,21 +23,20 @@ void vIndicatorPanel_Out(void *pvParameters);
 void vBuzzer_beep(void *pvParameters);
 void vCarriage_Calibration(void *pvParameters);
 void vKey_Action(void *pvParameters);
-
 void vWelder_Run(void *pvParameters);
 void vWeleder_Run(void *pvParameters);
 
-#define Valve_L_OPEN HAL_GPIO_WritePin(oSolenoidValve1_GPIO_Port, oSolenoidValve1_Pin, GPIO_PIN_SET);
-#define Valve_L_CLOSE HAL_GPIO_WritePin(oSolenoidValve1_GPIO_Port, oSolenoidValve1_Pin, GPIO_PIN_RESET);
+#define Valve_L_OPEN HAL_GPIO_WritePin(oSolenoidValve1_GPIO_Port, oSolenoidValve1_Pin, GPIO_PIN_RESET); // Поднять (освободить) левую часть зажима заготовки
+#define Valve_L_CLOSE HAL_GPIO_WritePin(oSolenoidValve1_GPIO_Port, oSolenoidValve1_Pin, GPIO_PIN_SET); // Опустить (зажать) левую часть зажима заготовки
 
-#define Valve_R_OPEN HAL_GPIO_WritePin(oSolenoidValve2_GPIO_Port, oSolenoidValve2_Pin, GPIO_PIN_SET);
-#define Valve_R_CLOSE HAL_GPIO_WritePin(oSolenoidValve2_GPIO_Port, oSolenoidValve2_Pin, GPIO_PIN_RESET);
+#define Valve_R_OPEN HAL_GPIO_WritePin(oSolenoidValve2_GPIO_Port, oSolenoidValve2_Pin, GPIO_PIN_RESET); // Поднять (освободить) правую часть зажима заготовки
+#define Valve_R_CLOSE HAL_GPIO_WritePin(oSolenoidValve2_GPIO_Port, oSolenoidValve2_Pin, GPIO_PIN_SET);	// Опустить (зажать) правую часть зажима заготовки
 
-#define WELDER_HEAD_UP HAL_GPIO_WritePin(oSol_Valve_a_Heade_GPIO_Port, oSol_Valve_a_Heade_Pin|oSol_Valve_b_Heade_Pin, GPIO_PIN_SET);
-#define WELDER_HEAD_DOWN HAL_GPIO_WritePin(oSol_Valve_a_Heade_GPIO_Port, oSol_Valve_a_Heade_Pin|oSol_Valve_b_Heade_Pin, GPIO_PIN_RESET);
+#define WELDER_HEAD_UP HAL_GPIO_WritePin(oSol_Valve_a_Heade_GPIO_Port, oSol_Valve_a_Heade_Pin|oSol_Valve_b_Heade_Pin, GPIO_PIN_SET); // Поднять сваручную головку
+#define WELDER_HEAD_DOWN HAL_GPIO_WritePin(oSol_Valve_a_Heade_GPIO_Port, oSol_Valve_a_Heade_Pin|oSol_Valve_b_Heade_Pin, GPIO_PIN_RESET); // Опустить сваручную головку
 
-#define SYNC_ARC_ON HAL_GPIO_WritePin(oSyncArc_GPIO_Port, oSyncArc_Pin, GPIO_PIN_SET);
-#define SYNC_ARC_OFF HAL_GPIO_WritePin(oSyncArc_GPIO_Port, oSyncArc_Pin, GPIO_PIN_RESET);
+#define SYNC_ARC_ON HAL_GPIO_WritePin(oSyncArc_GPIO_Port, oSyncArc_Pin, GPIO_PIN_SET);	// Подача дуги
+#define SYNC_ARC_OFF HAL_GPIO_WritePin(oSyncArc_GPIO_Port, oSyncArc_Pin, GPIO_PIN_RESET); // Отключение дуги
 
 #define WELDER_STATE_PEDAL_R 0x40 // Нажата педаль для зажима правой части заготовки
 #define WELDER_STATE_PEDAL_L 0x20 // Нажата педаль для зажима левой части заготовки
