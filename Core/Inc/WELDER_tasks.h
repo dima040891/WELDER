@@ -38,8 +38,10 @@ void vWeleder_Run(void *pvParameters);
 #define SYNC_ARC_ON HAL_GPIO_WritePin(oSyncArc_GPIO_Port, oSyncArc_Pin, GPIO_PIN_SET);	// Подача дуги
 #define SYNC_ARC_OFF HAL_GPIO_WritePin(oSyncArc_GPIO_Port, oSyncArc_Pin, GPIO_PIN_RESET); // Отключение дуги
 
-#define WELDER_STATE_PEDAL_R 0x40 // Нажата педаль для зажима правой части заготовки
-#define WELDER_STATE_PEDAL_L 0x20 // Нажата педаль для зажима левой части заготовки
+#define WELDER_STATE_HOLDER_R 0x08 // Держатель заготвки правый закрыт (удерживает)
+#define WELDER_STATE_HOLDER_L 0x04 // Держатель заготвки левый закрыт (удерживает)
+#define WELDER_STATE_PEDAL_R 0x02 // Нажата педаль для зажима правой части заготовки
+#define WELDER_STATE_PEDAL_L 0x01 // Нажата педаль для зажима левой части заготовки
 #define WELDER_STATE_BACK_DOOR_CLOSE 0x10 // Признак закрытой задней дверцы
 #define WELDER_STATE_CALIBRATED 0x02 // Аппарат откалиброван
 
@@ -90,6 +92,7 @@ typedef struct
 					// 2 бит - Движение каретки. 0 - к концевику, 1 - от концевика
 					// 1 бит - Не откалибровано (0) / Откалибровано (1);
 					//0 бит - Простой (0) / Движение каретки (формирование ШИМ  сигнала для каретки) (1);
+	uint8_t HolderState; // Состояние зажимов заготовки
 	IndicatorValues IndicatorPanel;
 	uint8_t BuzzerMode;
 	uint8_t Mode; // Режим работы аппарата. Определят дейсвия по нажатию кнопки СТАРТ/СТОП

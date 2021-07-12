@@ -30,15 +30,17 @@ void freeRTOS_Tasks_Ini (void)
 
 	MicrostepDriver_Ini();
 
-	xTaskCreate(vIndicatorPanel_Out, "IndicatorPanel_Out", 500, NULL, 2, NULL); // З-а вывода значений на панель
+//	WELDER_Preset();
 
-	xTaskCreate(vKeyScan, "KeyScan", 400, NULL, 2, NULL); // З-а опроса кнопок
+	xTaskCreate(vIndicatorPanel_Out, "IndicatorPanel_Out", 200, NULL, 2, NULL); // З-а вывода значений на панель
 
-	xTaskCreate(vBuzzer_beep, "Buzzer_beep", 100, NULL, 1, NULL); // З-а опроса кнопок
+	xTaskCreate(vKeyScan, "KeyScan", 200, NULL, 2, NULL); // З-а опроса кнопок
 
-	xTaskCreate(vWelder_Run, "Weleder_Run", 250, NULL, 2, NULL);
+	xTaskCreate(vBuzzer_beep, "Buzzer_beep", 200, NULL, 1, NULL); // З-а опроса кнопок
 
-	xTaskCreate(vCarriage_GoTo, "Carriage_GoTo", 400, NULL, 3, NULL); // З-а перемещения каретки в заданную точку
+	xTaskCreate(vWelder_Run, "Weleder_Run", 200, NULL, 2, NULL);
+
+	xTaskCreate(vCarriage_GoTo, "Carriage_GoTo", 200, NULL, 3, NULL); // З-а перемещения каретки в заданную точку
 
 	xTaskCreate(vCarriage_Calibration, "Carriage_Calibration", 200, NULL, 2, NULL); // З-а перемещения каретки в заданную точку
 
@@ -608,7 +610,6 @@ void vCarriage_Calibration(void *pvParameters)
 
 		if (lReceivedValue == Calibrated)
 		{
-
 			WELDER_HEAD_UP // Поднять головку
 			vTaskDelay(100 / portTICK_RATE_MS); // Ожидание подъема головки
 
@@ -739,7 +740,8 @@ void vKeyScan(void *pvParameters)
 	for(;;)
 	{
 		PCB_KeyScan();
-		PCB_InputsScan();
+		PCB_OutputControl();
+		//PCB_InputsScan();
 
 		if (WelderUnit.IndicatorPanel.KeyState[0] == 128) // ВЛЕВО: [0], "-" - 128, "+" - 64, , STLED №5;
 		{

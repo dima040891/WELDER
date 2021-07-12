@@ -279,24 +279,20 @@ void PCB_InputsScan (void)
 {
 	if (HAL_GPIO_ReadPin(iPedal_L_GPIO_Port, iPedal_L_Pin)) // Если Нажата педаль для зажима левой части заготовки, то установить бит, иначе сбросить
 	{
-		WelderUnit.State |= WELDER_STATE_PEDAL_L;
-		Valve_L_CLOSE
+		WelderUnit.HolderState |= WELDER_STATE_PEDAL_L;
 	}
 	else
 	{
-		WelderUnit.State &= ~WELDER_STATE_PEDAL_L;
-		Valve_L_OPEN
+		WelderUnit.HolderState &= ~WELDER_STATE_PEDAL_L;
 	}
 
 	if (HAL_GPIO_ReadPin(iPedal_R_GPIO_Port, iPedal_R_Pin)) // Если Нажата педаль для зажима правой части заготовки, то установить бит, иначе сбросить
 	{
-		WelderUnit.State |= WELDER_STATE_PEDAL_R;
-		Valve_R_CLOSE
+		WelderUnit.HolderState |= WELDER_STATE_PEDAL_R;
 	}
 	else
 	{
-		WelderUnit.State &= ~WELDER_STATE_PEDAL_R;
-		Valve_R_OPEN
+		WelderUnit.HolderState &= ~WELDER_STATE_PEDAL_R;
 	}
 
 	if (HAL_GPIO_ReadPin(iBackDoor_GPIO_Port, iBackDoor_Pin)) // Если задняя дверца закрыта, то установить бит, иначе сбросить
@@ -308,6 +304,53 @@ void PCB_InputsScan (void)
 	{
 		WelderUnit.State &= ~WELDER_STATE_BACK_DOOR_CLOSE;
 	}
+}
+
+void PCB_OutputControl(void)
+{
+	static uint8_t StateOld = 0;
+
+	PCB_InputsScan(); // Опрос входов платы
+
+
+	if ((WelderUnit.HolderState & WELDER_STATE_PEDAL_L) != (StateOld & WELDER_STATE_PEDAL_L)) // Если произошли изменения на входе отвечающим за девую педаль
+	{
+		if(WelderUnit.HolderState & WELDER_STATE_PEDAL_L) // Если педаль была нажата (фронт импульса)
+		{
+			WelderUnit.HolderState = WelderUnit.HolderState ^ WELDER_STATE_HOLDER_L; // Инвертировать состояние бита держателя затовки
+		}
+
+	}
+
+	if ((WelderUnit.HolderState & WELDER_STATE_PEDAL_R) != (StateOld & WELDER_STATE_PEDAL_R)) // Если произошли изменения на входе отвечающим за девую педаль
+	{
+		if(WelderUnit.HolderState & WELDER_STATE_PEDAL_R) // Если педаль была нажата (фронт импульса)
+		{
+			WelderUnit.HolderState = WelderUnit.HolderState ^ WELDER_STATE_HOLDER_R; // Инвертировать состояние бита держателя затовки
+		}
+
+	}
+
+	if(WelderUnit.HolderState & WELDER_STATE_HOLDER_L) // Если бит установлен, то зажать зажать заготвку, иначе отпустить
+	{
+		Valve_L_CLOSE
+	}
+	else
+	{
+		Valve_L_OPEN
+	}
+
+	if(WelderUnit.HolderState & WELDER_STATE_HOLDER_R) // Если бит установлен, то зажать зажать заготвку, иначе отпустить
+	{
+		Valve_R_CLOSE
+	}
+	else
+	{
+		Valve_R_OPEN
+	}
+
+	StateOld = WelderUnit.HolderState; // Сохранить текущее состояние
+
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
@@ -523,4 +566,10 @@ void PCB_LEDs_OUT (uint8_t LEDs_val)
 	STLED_digVal[4] = LEDs_val;
 
 }
+
+//void WELDER_Preset(void)
+//{
+//	MicrostepDriver_Ini(); // Инициализация переферии МК для работы с драйвером ШД
+//
+//}
 
