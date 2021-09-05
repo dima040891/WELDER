@@ -35,15 +35,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  15 .debug_ranges 00001428  00000000  00000000  000410c8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001b8c8  00000000  00000000  000424f0  2**0
+ 16 .debug_macro  0001b8da  00000000  00000000  000424f0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000188aa  00000000  00000000  0005ddb8  2**0
+ 17 .debug_line   000188aa  00000000  00000000  0005ddca  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000a26e3  00000000  00000000  00076662  2**0
+ 18 .debug_str    000a2729  00000000  00000000  00076674  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  00118d45  2**0
+ 19 .comment      00000053  00000000  00000000  00118d9d  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00005ae0  00000000  00000000  00118d98  2**2
+ 20 .debug_frame  00005ae0  00000000  00000000  00118df0  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -4820,7 +4820,7 @@ void vCarriage_Calibration(void *pvParameters)
  80024c6:	4b2a      	ldr	r3, [pc, #168]	; (8002570 <vCarriage_Calibration+0xf8>)
  80024c8:	f883 2021 	strb.w	r2, [r3, #33]	; 0x21
 
-			Carriage_Move(400, 0, 1); // Начать перемещение каретки в сторону концевика
+			Carriage_Move(CALIBRATION_PHASE_SPEED_1, 0, 1); // Начать перемещение каретки в сторону концевика
  80024cc:	2201      	movs	r2, #1
  80024ce:	2100      	movs	r1, #0
  80024d0:	f44f 70c8 	mov.w	r0, #400	; 0x190
@@ -4848,13 +4848,13 @@ void vCarriage_Calibration(void *pvParameters)
  80024f8:	2000      	movs	r0, #0
  80024fa:	f7fe fcc5 	bl	8000e88 <Carriage_Move>
 
-			Carriage_Move(200, 1, 1); // Отъехать немного назад
+			Carriage_Move(CALIBRATION_PHASE_SPEED_2, 1, 1); // Отъехать немного назад
  80024fe:	2201      	movs	r2, #1
  8002500:	2101      	movs	r1, #1
- 8002502:	20c8      	movs	r0, #200	; 0xc8
+ 8002502:	20dc      	movs	r0, #220	; 0xdc
  8002504:	f7fe fcc0 	bl	8000e88 <Carriage_Move>
-			vTaskDelay(2000 / portTICK_RATE_MS);
- 8002508:	f44f 60fa 	mov.w	r0, #2000	; 0x7d0
+			vTaskDelay(1000 / portTICK_RATE_MS);
+ 8002508:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
  800250c:	f005 fc30 	bl	8007d70 <vTaskDelay>
 
 			Carriage_Move(0, 0, 1); // Стоп
@@ -4867,7 +4867,7 @@ void vCarriage_Calibration(void *pvParameters)
  800251a:	2064      	movs	r0, #100	; 0x64
  800251c:	f005 fc28 	bl	8007d70 <vTaskDelay>
 
-			Carriage_Move(24, 0, 1); // Начать перемещение каретки в сторону концевика
+			Carriage_Move(CALIBRATION_PHASE_SPEED_3, 0, 1); // Начать перемещение каретки в сторону концевика
  8002520:	2201      	movs	r2, #1
  8002522:	2100      	movs	r1, #0
  8002524:	2018      	movs	r0, #24
@@ -8756,43 +8756,93 @@ void SystemInit (void)
  8003a2e:	4770      	bx	lr
 
 08003a30 <Reset_Handler>:
+  .weak Reset_Handler
+  .type Reset_Handler, %function
+Reset_Handler:
+
+/* Copy the data segment initializers from flash to SRAM */
+  movs r1, #0
  8003a30:	2100      	movs	r1, #0
+  b LoopCopyDataInit
  8003a32:	e003      	b.n	8003a3c <LoopCopyDataInit>
 
 08003a34 <CopyDataInit>:
+
+CopyDataInit:
+  ldr r3, =_sidata
  8003a34:	4b0b      	ldr	r3, [pc, #44]	; (8003a64 <LoopFillZerobss+0x14>)
+  ldr r3, [r3, r1]
  8003a36:	585b      	ldr	r3, [r3, r1]
+  str r3, [r0, r1]
  8003a38:	5043      	str	r3, [r0, r1]
+  adds r1, r1, #4
  8003a3a:	3104      	adds	r1, #4
 
 08003a3c <LoopCopyDataInit>:
+
+LoopCopyDataInit:
+  ldr r0, =_sdata
  8003a3c:	480a      	ldr	r0, [pc, #40]	; (8003a68 <LoopFillZerobss+0x18>)
+  ldr r3, =_edata
  8003a3e:	4b0b      	ldr	r3, [pc, #44]	; (8003a6c <LoopFillZerobss+0x1c>)
+  adds r2, r0, r1
  8003a40:	1842      	adds	r2, r0, r1
+  cmp r2, r3
  8003a42:	429a      	cmp	r2, r3
+  bcc CopyDataInit
  8003a44:	d3f6      	bcc.n	8003a34 <CopyDataInit>
+  ldr r2, =_sbss
  8003a46:	4a0a      	ldr	r2, [pc, #40]	; (8003a70 <LoopFillZerobss+0x20>)
+  b LoopFillZerobss
  8003a48:	e002      	b.n	8003a50 <LoopFillZerobss>
 
 08003a4a <FillZerobss>:
+/* Zero fill the bss segment. */
+FillZerobss:
+  movs r3, #0
  8003a4a:	2300      	movs	r3, #0
+  str r3, [r2], #4
  8003a4c:	f842 3b04 	str.w	r3, [r2], #4
 
 08003a50 <LoopFillZerobss>:
+
+LoopFillZerobss:
+  ldr r3, = _ebss
  8003a50:	4b08      	ldr	r3, [pc, #32]	; (8003a74 <LoopFillZerobss+0x24>)
+  cmp r2, r3
  8003a52:	429a      	cmp	r2, r3
+  bcc FillZerobss
  8003a54:	d3f9      	bcc.n	8003a4a <FillZerobss>
+
+/* Call the clock system intitialization function.*/
+    bl  SystemInit
  8003a56:	f7ff ffe5 	bl	8003a24 <SystemInit>
+/* Call static constructors */
+    bl __libc_init_array
  8003a5a:	f005 fc69 	bl	8009330 <__libc_init_array>
+/* Call the application's entry point.*/
+  bl main
  8003a5e:	f7ff fc87 	bl	8003370 <main>
+  bx lr
  8003a62:	4770      	bx	lr
+  ldr r3, =_sidata
  8003a64:	080094ac 	.word	0x080094ac
+  ldr r0, =_sdata
  8003a68:	20000000 	.word	0x20000000
+  ldr r3, =_edata
  8003a6c:	20000010 	.word	0x20000010
+  ldr r2, =_sbss
  8003a70:	20000010 	.word	0x20000010
+  ldr r3, = _ebss
  8003a74:	20003ed8 	.word	0x20003ed8
 
 08003a78 <ADC1_2_IRQHandler>:
+ * @retval : None
+*/
+    .section .text.Default_Handler,"ax",%progbits
+Default_Handler:
+Infinite_Loop:
+  b Infinite_Loop
  8003a78:	e7fe      	b.n	8003a78 <ADC1_2_IRQHandler>
 	...
 
