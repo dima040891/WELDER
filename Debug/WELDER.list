@@ -4851,7 +4851,7 @@ void vCarriage_Calibration(void *pvParameters)
 			Carriage_Move(CALIBRATION_PHASE_SPEED_2, 1, 1); // Отъехать немного назад
  80024fe:	2201      	movs	r2, #1
  8002500:	2101      	movs	r1, #1
- 8002502:	20dc      	movs	r0, #220	; 0xdc
+ 8002502:	20c8      	movs	r0, #200	; 0xc8
  8002504:	f7fe fcc0 	bl	8000e88 <Carriage_Move>
 			vTaskDelay(1000 / portTICK_RATE_MS);
  8002508:	f44f 707a 	mov.w	r0, #1000	; 0x3e8
