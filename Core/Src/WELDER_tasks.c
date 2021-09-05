@@ -616,7 +616,7 @@ void vCarriage_Calibration(void *pvParameters)
 			WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация поднятой сварочной головки
 			WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN;
 
-			Carriage_Move(400, 0, 1); // Начать перемещение каретки в сторону концевика
+			Carriage_Move(CALIBRATION_PHASE_SPEED_1, 0, 1); // Начать перемещение каретки в сторону концевика
 
 			// Когда концевик замкнулся выдается семофор, что коретка дошла до самого начала
 
@@ -626,14 +626,14 @@ void vCarriage_Calibration(void *pvParameters)
 
 			Carriage_Move(0, 0, 1); // Стоп
 
-			Carriage_Move(200, 1, 1); // Отъехать немного назад
-			vTaskDelay(2000 / portTICK_RATE_MS);
+			Carriage_Move(CALIBRATION_PHASE_SPEED_2, 1, 1); // Отъехать немного назад
+			vTaskDelay(1000 / portTICK_RATE_MS);
 
 			Carriage_Move(0, 0, 1); // Стоп
 
 			vTaskDelay(100/ portTICK_RATE_MS);
 
-			Carriage_Move(24, 0, 1); // Начать перемещение каретки в сторону концевика
+			Carriage_Move(CALIBRATION_PHASE_SPEED_3, 0, 1); // Начать перемещение каретки в сторону концевика
 
 			// По какой-то причине при первой попытке взять 2-й семафор он берется (даже если не выдан). Потому семафор берется дважды
 			xSemaphoreTake( xSemaphore_Calibration, portMAX_DELAY ); // Попытка взять семафор по прерыванию срабатывания концевика

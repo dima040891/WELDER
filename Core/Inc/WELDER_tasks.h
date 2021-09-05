@@ -57,6 +57,10 @@ void vWeleder_Run(void *pvParameters);
 
 #define KICKBACK 200 // Значение отката коретки после окончания варки, мм
 
+#define CALIBRATION_PHASE_SPEED_1 400 // Скорость перемещения картеки при первой фазе калибровки (движение картеки на встречу концевику), см/мин
+#define CALIBRATION_PHASE_SPEED_2 200 // Скорость перемещения картеки при второй фазе калибровки (движение картеки от концевика), см/мин
+#define CALIBRATION_PHASE_SPEED_3 24 // Скорость перемещения картеки при третьей фазе калибровки (движение картеки на встречу концевику), см/мин
+
 	xSemaphoreHandle xSemaphore_StepCount; // Декларирование переменной xSemaphore_StepCount, т.е. создание ссылки на будущий семафор
 
 	xSemaphoreHandle xSemaphore_Calibration;
