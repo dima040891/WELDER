@@ -467,6 +467,14 @@ void vKey_Action(void *pvParameters)
 				break;
 			}
 
+			case WELDER_MODE_MANUAL:
+			{
+				Run = Welder_Run;
+				xQueueSendToBack(qWelderRun, &Run, 0 );
+				break;
+			}
+
+
 			case WELDER_MODE_AUTO:
 			{
 				Run = Welder_Run;
@@ -533,8 +541,8 @@ void vWelder_Run(void *pvParameters)
 			WelderUnit.GoTo = WelderUnit.Xs;
 			xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идти к
 
-//			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
-			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки ханята
+			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
+			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки занята
 		}
 
 		if (/*(lReceivedValue == Carriage_Done) ||*/ (WelderUnit.Position == WelderUnit.Xs)) // Если каретка на заданной позиции
