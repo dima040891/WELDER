@@ -114,7 +114,6 @@ void vKey_Action(void *pvParameters)
 				Carriage_cmd = Cmd_CarriageGoTo;
 				WelderUnit.GoTo = WelderUnit.Xs;
 				xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идити к
-
 			}
 
 			}
@@ -533,7 +532,7 @@ void vWelder_Run(void *pvParameters)
 
 		if (lReceivedValue == Welder_Run && ((WelderUnit.State & 0x02) == 0x02) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) ) // Если пришла команда на начло варки и каретка откалибрована и задняя дверца закрыта
 		{
-			beep = beep_long;
+			beep = beep_1short;
 			xQueueSendToBack( qBeepMode, &beep, 0 ); // Звук нажатия
 
 		if (WelderUnit.Position != WelderUnit.Xs) // Если текущая позиция каретки не равна стартовой позиции, то занять её
@@ -1566,10 +1565,13 @@ void vBuzzer_beep(void *pvParameters)
 
 		case beep_1short:
 		{
-			BUZZER_ON
-			vTaskDelay(100 / portTICK_RATE_MS);
-			BUZZER_OFF
-			vTaskDelay(100 / portTICK_RATE_MS);
+			for(uint16_t i = 0; i < 10; i++)
+			    {
+			    BUZZER_ON
+			    vTaskDelay(1 / portTICK_RATE_MS);
+			    BUZZER_OFF
+			    vTaskDelay(1 / portTICK_RATE_MS);
+			    }
 			break;
 		}
 
