@@ -19,7 +19,7 @@ void IndicatorPanel_SetValue (IndicatorValues *IndicatorPanel0)
 
 	for(uint8_t i = 0; i < 6; i++)
 	{
-		STLED_digVal[i] = 0;
+	    STLED_digVal[i] = 0;
 	}
 
 	//uint8_t gg = 11;

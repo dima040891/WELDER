@@ -505,8 +505,9 @@ void vKey_Action(void *pvParameters)
 		case press_short_Program_L_and_R:
 		{
 			beep_mode_send = beep_long;
-			xQueueSendToBack( qBeepMode, &beep_mode_send , 0 ); // Звук нажат
+			xQueueSendToBack( qBeepMode, &beep_mode_send , 0 ); // Звук нажатия
 			SaveProgramToFlash2();
+			beep_mode_send = beep_click;
 			break;
 		}
 
@@ -1588,29 +1589,48 @@ void vBuzzer_beep(void *pvParameters)
 
 		case beep_3short:
 		{
-			BUZZER_ON
-			vTaskDelay(100 / portTICK_RATE_MS);
-			BUZZER_OFF
-			vTaskDelay(100 / portTICK_RATE_MS);
+			for(uint16_t i = 0; i < 40; i++)
+			    {
+				BUZZER_ON
+				vTaskDelay(1 / portTICK_RATE_MS);
+				BUZZER_OFF
+				vTaskDelay(1 / portTICK_RATE_MS);
+			    }
 
-			BUZZER_ON
-			vTaskDelay(100 / portTICK_RATE_MS);
-			BUZZER_OFF
-			vTaskDelay(100 / portTICK_RATE_MS);
+			vTaskDelay(40 / portTICK_RATE_MS);
 
-			BUZZER_ON
-			vTaskDelay(100 / portTICK_RATE_MS);
-			BUZZER_OFF
-			vTaskDelay(100 / portTICK_RATE_MS);
+			for(uint16_t i = 0; i < 40; i++)
+			    {
+				BUZZER_ON
+				vTaskDelay(1 / portTICK_RATE_MS);
+				BUZZER_OFF
+				vTaskDelay(1 / portTICK_RATE_MS);
+			    }
+
+			vTaskDelay(40 / portTICK_RATE_MS);
+
+			for(uint16_t i = 0; i < 50; i++)
+			    {
+				BUZZER_ON
+				vTaskDelay(1 / portTICK_RATE_MS);
+				BUZZER_OFF
+				vTaskDelay(1 / portTICK_RATE_MS);
+			    }
+
+			vTaskDelay(40 / portTICK_RATE_MS);
+
 			break;
 		}
 
 		case beep_long:
 		{
-			BUZZER_ON
-			vTaskDelay(500 / portTICK_RATE_MS);
-			BUZZER_OFF
-			vTaskDelay(200 / portTICK_RATE_MS);
+			for(uint16_t i = 0; i < 200; i++)
+			    {
+				BUZZER_ON
+				vTaskDelay(1 / portTICK_RATE_MS);
+				BUZZER_OFF
+				vTaskDelay(1 / portTICK_RATE_MS);
+			    }
 			break;
 		}
 
