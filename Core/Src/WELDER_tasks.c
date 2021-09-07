@@ -360,7 +360,7 @@ void vKey_Action(void *pvParameters)
 		case press_short_Down:
 				{
 					xQueueSendToBack( qBeepMode, &beep_mode_send, 0 ); // Звук нажатия
-					if (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) // Если задняя дверца закрыта, то разрешить опускание головки
+					if ((WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) && WelderUnit.Mode == WELDER_MODE_MANUAL) // Если задняя дверца закрыта и режим работы аппарата ручной, то разрешить опускание головки.
 					{
 						WELDER_HEAD_DOWN // Опустить сварочную головку
 						WelderUnit.IndicatorPanel.LEDsState |= LED_DOWN; // Индикация что головка опущена
@@ -383,9 +383,12 @@ void vKey_Action(void *pvParameters)
 				case press_short_Up:
 				{
 					xQueueSendToBack( qBeepMode, &beep_mode_send, 0 ); // Звук нажатия
+					if ((WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) && WelderUnit.Mode == WELDER_MODE_MANUAL) // Если задняя дверца закрыта и режим работы аппарата ручной, то разрешить подъем головки
+					{
 					WELDER_HEAD_UP // Поднять сварочную головку
 					WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация что головка поднята
 					WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN; // Индикация что головка поднята
+					}
 					break;
 				}
 
