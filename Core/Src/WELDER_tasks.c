@@ -655,6 +655,8 @@ void vCarriage_Calibration(void *pvParameters)
 			WelderUnit.State |= 1<<1; //1 бит - Откалибровано
 
 			WelderUnit.Position = 0; // Позиция каретки
+
+			WelderUnit.Mode = WELDER_MODE_MANUAL; // После калибровки режим работы аппарата - ручной.
 		}
 
 	}
