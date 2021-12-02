@@ -32,7 +32,7 @@ void freeRTOS_Tasks_Ini (void)
 
 //	WELDER_Preset();
 
-	xTaskCreate(vIndicatorPanel_Out, "IndicatorPanel_Out", 200, NULL, 2, NULL); // З-а вывода значений на панель
+	xTaskCreate(vIndicatorPanel_Out, "IndicatorPanel_Out", 250, NULL, 2, NULL); // З-а вывода значений на панель
 
 	xTaskCreate(vKeyScan, "KeyScan", 200, NULL, 2, NULL); // З-а опроса кнопок
 
@@ -472,7 +472,7 @@ void vKey_Action(void *pvParameters)
 			case WELDER_MODE_MANUAL:
 			{
 				Run = Welder_Run;
-				xQueueSendToBack(qWelderRun, &Run, 0 );
+				xQueueSendToBack(qWelderRun, &Run, 0 ); // Начать варку в ручном режиме
 				break;
 			}
 
@@ -480,7 +480,29 @@ void vKey_Action(void *pvParameters)
 			case WELDER_MODE_AUTO:
 			{
 				Run = Welder_Run;
-				xQueueSendToBack(qWelderRun, &Run, 0 );
+
+				if (WelderUnit.State & 0x01) // Если каретка уже движеся, то остановать её
+				{
+					//WelderUnit.GoTo = WelderUnit.Position;
+
+					WelderUnit.State &= ~WELDER_MOVE_ENABLE; // Заппретить движение каретки
+
+
+//					Run = Cmd_CarriageStop;
+//					xQueueSendToBack(qGoToResponse, &Run, 0 ); // Дать отклик что каретка в заданной позиции
+
+					//Run = Cmd_CarriageStop;
+
+					//xQueueSendToBack(qWelderRun, &Run, 0 ); // Начать варку в автоматическом режиме
+
+				}
+				else // Иначе начать варку
+				{
+					Run = Welder_Run;
+					WelderUnit.State |= WELDER_MOVE_ENABLE; // Разрешить движение каретки
+					xQueueSendToBack(qWelderRun, &Run, 0 ); // Начать варку в автоматическом режиме
+
+				}
 				break;
 			}
 			}
@@ -531,7 +553,7 @@ void vWelder_Run(void *pvParameters)
 
 	for(;;)
 	{
-		xQueueReceive(qWelderRun, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки ханята
+		xQueueReceive(qWelderRun, &lReceivedValue, portMAX_DELAY ); // Ожидание команды на начало варки
 
 		if (lReceivedValue == Welder_Run && ((WelderUnit.State & 0x02) == 0x02) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) ) // Если пришла команда на начло варки и каретка откалибрована и задняя дверца закрыта
 		{
@@ -548,9 +570,8 @@ void vWelder_Run(void *pvParameters)
 			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки занята
 		}
 
-		if (/*(lReceivedValue == Carriage_Done) ||*/ (WelderUnit.Position == WelderUnit.Xs)) // Если каретка на заданной позиции
+		if ((WelderUnit.Position == WelderUnit.Xs) && (WelderUnit.State & WELDER_MOVE_ENABLE)) // Если каретка на заданной позиции и движение каретки разрешено
 		{
-
 
 		WELDER_HEAD_DOWN // Опустить головку
 		WelderUnit.IndicatorPanel.LEDsState |= LED_DOWN; // Индикация опущенной сварочной головки
@@ -566,7 +587,8 @@ void vWelder_Run(void *pvParameters)
 
 
 		xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
-		xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки ханята
+		xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки занята
+
 
 		SYNC_ARC_OFF // Прекращение подачи дуги
 
@@ -583,18 +605,18 @@ void vWelder_Run(void *pvParameters)
 
 		// Откат каретки
 
-		if (WelderUnit.Position > KICKBACK)
-		{
-			WelderUnit.GoTo = WelderUnit.Position -	KICKBACK;
-		}
-		else
-		{
-			WelderUnit.GoTo = 0;
-		}
+			if (WelderUnit.Position > KICKBACK)
+			{
+				WelderUnit.GoTo = WelderUnit.Position -	KICKBACK;
+			}
+			else
+			{
+				WelderUnit.GoTo = 0;
+			}
 
-		Carriage_cmd = Cmd_CarriageGoTo;
-		xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идити к
-		xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки ханята
+			Carriage_cmd = Cmd_CarriageGoTo;
+			xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идити к
+			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки ханята
 
 		}
 
@@ -679,7 +701,15 @@ void vCarriage_GoTo(void *pvParameters)
 		// Данные из очереди при этом не удаляются
 		xQueuePeek(qWelderCmd, &lReceivedValue, portMAX_DELAY );
 
-		if (lReceivedValue == Cmd_CarriageGoTo)
+//		if (!(WelderUnit.State & WELDER_MOVE_ENABLE))
+//		{
+//			Carriage_Move(0, 1, 1); // стоп
+//			WelderUnit.State &= ~0x01;
+//			xQueueReceive(qWelderCmd, &lReceivedValue, portMAX_DELAY );
+//			//WelderUnit.GoTo = WelderUnit.Position;
+//		}
+
+		if ((lReceivedValue == Cmd_CarriageGoTo) ) // Если пришла команда на начло движения
 		{
 
 		WelderUnit.Position = WelderUnit.Steps * DISTANCE_PER_ROTATE / (STEPS_PER_ROTATE * MICRO_STEP_DEV); // Вычисление текущей позиции каретки, мм
@@ -700,7 +730,7 @@ void vCarriage_GoTo(void *pvParameters)
 
 		}
 
-		if (dX > 0) // Если двигать в сторону концевика
+		if (dX > 0 && (WelderUnit.State & WELDER_MOVE_ENABLE)) // Если двигать в сторону концевика
 		{
 
 			if (WelderUnit.Position <= WelderUnit.GoTo && !(WelderUnit.State & 0x01)) // Если позиция не достигнута и каретка находится не в движении, то начать перемещение
@@ -711,7 +741,7 @@ void vCarriage_GoTo(void *pvParameters)
 			}
 		}
 
-		if (dX < 0) // Если нужно двигать от концевика
+		if (dX < 0 && (WelderUnit.State & WELDER_MOVE_ENABLE)) // Если нужно двигать от концевика
 		{
 			if (WelderUnit.Position >= WelderUnit.GoTo && !(WelderUnit.State & 0x01)) // Если позиция не достигнута и каретка находится не в движении, то начать перемещение
 			{
@@ -719,6 +749,12 @@ void vCarriage_GoTo(void *pvParameters)
 				WelderUnit.State |= 0x01; // Статус - каретка в движении
 				WelderUnit.State |= 0x04; // Статус картека движется от концевика
 			}
+		}
+
+		if(!(WelderUnit.State & WELDER_MOVE_ENABLE))
+		{
+			Carriage_Move(0, 1, 1); // стоп
+			WelderUnit.State &= ~0x01;
 		}
 
 		if (xSemaphoreTake(xSemaphore_StepCount, (500 / portTICK_RATE_MS)) == pdTRUE) // Если через 100 мС семафор так и не получен, то считать что двигатель осановлен
@@ -736,6 +772,8 @@ void vCarriage_GoTo(void *pvParameters)
 		}
 
 		}
+
+
 
 	}
 	vTaskDelete(NULL);
