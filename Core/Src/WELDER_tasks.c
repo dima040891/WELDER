@@ -471,14 +471,6 @@ void vKey_Action(void *pvParameters)
 
 			case WELDER_MODE_MANUAL:
 			{
-				Run = Welder_Run;
-				xQueueSendToBack(qWelderRun, &Run, 0 ); // Начать варку в ручном режиме
-				break;
-			}
-
-
-			case WELDER_MODE_AUTO:
-			{
 
 
 
@@ -495,6 +487,7 @@ void vKey_Action(void *pvParameters)
 					WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация поднятой сварочной головки
 					WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN;
 
+					// Далее идет очистка очередей задачи vWelder_Run. Задержка необхадима для переключения контеста задачи
 					Run = Carriage_Done;
 					xQueueSendToBack(qGoToResponse, &Run, 0 );
 					vTaskDelay(10);
@@ -508,7 +501,66 @@ void vKey_Action(void *pvParameters)
 					vTaskDelay(10);
 
 
-					xQueueReset(qGoToResponse);
+					xQueueReset(qGoToResponse); // Сброс очереди в исходное состояние
+
+
+				}
+				else // Иначе начать варку
+				{
+
+					//UBaseType_t Q;
+
+					if (!(WelderUnit.State & WELDER_MOVE_ENABLE)) // Если движение было запрещено (остановлено), то просто разрешить движение каретки
+					{
+					WelderUnit.State |= WELDER_MOVE_ENABLE; // Разрешить движение каретки
+					}
+					else // иначе начать варку
+					{
+						Run = Welder_Run;
+						WelderUnit.State |= WELDER_MOVE_ENABLE; // Разрешить движение каретки
+						xQueueSendToBack(qWelderRun, &Run, 0 ); // Начать варку в автоматическом режиме
+
+					}
+
+
+
+
+				}
+				break;
+			}
+
+
+			case WELDER_MODE_AUTO:
+			{
+
+				Run = Welder_Run;
+
+				if (WelderUnit.State & 0x01) // Если каретка уже движеся, то остановать её (остановка варки)
+				{
+
+					WelderUnit.State &= ~WELDER_MOVE_ENABLE; // Заппретить движение каретки
+
+					SYNC_ARC_OFF // Прекращение подачи дуги
+
+					WELDER_HEAD_UP // Поднять головку
+					WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация поднятой сварочной головки
+					WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN;
+
+					// Далее идет очистка очередей задачи vWelder_Run. Задержка необхадима для переключения контеста задачи
+					Run = Carriage_Done;
+					xQueueSendToBack(qGoToResponse, &Run, 0 );
+					vTaskDelay(10);
+					xQueueSendToBack(qGoToResponse, &Run, 0 );
+					vTaskDelay(10);
+					xQueueSendToBack(qGoToResponse, &Run, 0 );
+					vTaskDelay(10);
+					xQueueSendToBack(qGoToResponse, &Run, 0 );
+					vTaskDelay(10);
+					xQueueSendToBack(qGoToResponse, &Run, 0 );
+					vTaskDelay(10);
+
+
+					xQueueReset(qGoToResponse); // Сброс очереди в исходное состояние
 
 
 				}
@@ -669,7 +721,7 @@ void vCarriage_Calibration(void *pvParameters)
 
 	for(;;)
 	{
-		xQueueReceive(qWelderCalibrated, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки занята
+		xQueueReceive(qWelderCalibrated, &lReceivedValue, portMAX_DELAY ); // Ждать команды на начало калибровки
 
 		if (lReceivedValue == Calibrated)
 		{
