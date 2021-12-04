@@ -479,28 +479,58 @@ void vKey_Action(void *pvParameters)
 
 			case WELDER_MODE_AUTO:
 			{
+
+
+
 				Run = Welder_Run;
 
-				if (WelderUnit.State & 0x01) // Если каретка уже движеся, то остановать её
+				if (WelderUnit.State & 0x01) // Если каретка уже движеся, то остановать её (остановка варки)
 				{
-					//WelderUnit.GoTo = WelderUnit.Position;
 
 					WelderUnit.State &= ~WELDER_MOVE_ENABLE; // Заппретить движение каретки
 
+					SYNC_ARC_OFF // Прекращение подачи дуги
 
-//					Run = Cmd_CarriageStop;
-//					xQueueSendToBack(qGoToResponse, &Run, 0 ); // Дать отклик что каретка в заданной позиции
+					WELDER_HEAD_UP // Поднять головку
+					WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация поднятой сварочной головки
+					WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN;
 
-					//Run = Cmd_CarriageStop;
+					Run = Carriage_Done;
+					xQueueSendToBack(qGoToResponse, &Run, 0 );
+					vTaskDelay(10);
+					xQueueSendToBack(qGoToResponse, &Run, 0 );
+					vTaskDelay(10);
+					xQueueSendToBack(qGoToResponse, &Run, 0 );
+					vTaskDelay(10);
+					xQueueSendToBack(qGoToResponse, &Run, 0 );
+					vTaskDelay(10);
+					xQueueSendToBack(qGoToResponse, &Run, 0 );
+					vTaskDelay(10);
 
-					//xQueueSendToBack(qWelderRun, &Run, 0 ); // Начать варку в автоматическом режиме
+
+					xQueueReset(qGoToResponse);
+
 
 				}
 				else // Иначе начать варку
 				{
-					Run = Welder_Run;
+
+					//UBaseType_t Q;
+
+					if (!(WelderUnit.State & WELDER_MOVE_ENABLE)) // Если движение было запрещено (остановлено), то просто разрешить движение каретки
+					{
 					WelderUnit.State |= WELDER_MOVE_ENABLE; // Разрешить движение каретки
-					xQueueSendToBack(qWelderRun, &Run, 0 ); // Начать варку в автоматическом режиме
+					}
+					else // иначе начать варку
+					{
+						Run = Welder_Run;
+						WelderUnit.State |= WELDER_MOVE_ENABLE; // Разрешить движение каретки
+						xQueueSendToBack(qWelderRun, &Run, 0 ); // Начать варку в автоматическом режиме
+
+					}
+
+
+
 
 				}
 				break;
