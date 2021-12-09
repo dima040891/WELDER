@@ -24,7 +24,6 @@ void vBuzzer_beep(void *pvParameters);
 void vCarriage_Calibration(void *pvParameters);
 void vKey_Action(void *pvParameters);
 void vWelder_Run(void *pvParameters);
-//void vWeleder_Run(void *pvParameters); // Почему объявлено 2 раза??????
 
 #define Valve_L_OPEN HAL_GPIO_WritePin(oSolenoidValve1_GPIO_Port, oSolenoidValve1_Pin, GPIO_PIN_RESET); // Поднять (освободить) левую часть зажима заготовки
 #define Valve_L_CLOSE HAL_GPIO_WritePin(oSolenoidValve1_GPIO_Port, oSolenoidValve1_Pin, GPIO_PIN_SET); // Опустить (зажать) левую часть зажима заготовки
@@ -38,19 +37,24 @@ void vWelder_Run(void *pvParameters);
 #define SYNC_ARC_ON HAL_GPIO_WritePin(oSyncArc_GPIO_Port, oSyncArc_Pin, GPIO_PIN_SET);	// Подача дуги
 #define SYNC_ARC_OFF HAL_GPIO_WritePin(oSyncArc_GPIO_Port, oSyncArc_Pin, GPIO_PIN_RESET); // Отключение дуги
 
+// Для поля WELDER_State.HolderState
 #define WELDER_STATE_HOLDER_R 0x08 // Держатель заготвки правый закрыт (удерживает)
 #define WELDER_STATE_HOLDER_L 0x04 // Держатель заготвки левый закрыт (удерживает)
 #define WELDER_STATE_PEDAL_R 0x02 // Нажата педаль для зажима правой части заготовки
 #define WELDER_STATE_PEDAL_L 0x01 // Нажата педаль для зажима левой части заготовки
 #define WELDER_STATE_BACK_DOOR_CLOSE 0x10 // Признак закрытой задней дверцы
+
+// Для поля WELDER_State.State
 #define WELDER_STATE_CALIBRATED 0x02 // Аппарат откалиброван
+#define WELDER_MOVE_ENABLE 0x20 // Разрешение движения каретки (битмаска)
+#define WELDER_CLIBRATION_PROCESS 0x40 // Признак текущего выполнения калибровки, 1 - выполняется калибровка, 0- калибровка не выполняется
 
 #define LED_AUTO 0x01
 #define LED_PARKING 0x02
 #define LED_DOWN 0x04
 #define LED_UP 0x08
 
-// Режим работы аппарата
+// Режим работы аппарата WELDER_State.Mode
 #define WELDER_MODE_CALIBRATION 0x01 // Режим калибровки
 #define WELDER_MODE_MANUAL 0x02 // Ручной режим
 #define WELDER_MODE_AUTO 0x03 // Автоматический режим
@@ -61,7 +65,7 @@ void vWelder_Run(void *pvParameters);
 #define CALIBRATION_PHASE_SPEED_2 200 // Скорость перемещения картеки при второй фазе калибровки (движение картеки от концевика), см/мин
 #define CALIBRATION_PHASE_SPEED_3 24 // Скорость перемещения картеки при третьей фазе калибровки (движение картеки на встречу концевику), см/мин
 
-#define WELDER_MOVE_ENABLE 0x20 // Разрешение движения каретки (битмаска)
+
 
 	xSemaphoreHandle xSemaphore_StepCount; // Декларирование переменной xSemaphore_StepCount, т.е. создание ссылки на будущий семафор
 
@@ -94,8 +98,10 @@ typedef struct
 	uint8_t Delay_f; 	// Задержка после выключения дуги (заполнение аргоном), мС
 	uint16_t Program; 	// Текущая программа варки. Обеспечивает варку по данным сохраненным во flash (Xs, Xf, Delay_s, Delay_f и Speed )
 	uint16_t Steps; // Счетчик шагов ЩД. Используется для подсчета импульсов в обработчике прерываний EXTI
-	uint8_t State; 	// 4 бит - Разрешение на движение каретки 1- разрешено, 0 - запрещено
-					// 3 бит - Состояние вывода iCarriageStop 0 - коневик отжат, 1 - коневик нажат кареткой
+	uint8_t State; 	// 6 бит - выполняется калибровка (1) , (0) - не выполняется
+					// 5 бит - разрешение на движение каретки (1) разрешено, (0) - запрещено
+					// 4 бит - Признак закрытой задней дверцы  (1) - закрыта, (0) - открыта
+					// 3 бит - Состояние вывода iCarriageStop (0) - коневик отжат, (1) - коневик нажат кареткой
 					// 2 бит - Движение каретки. 0 - к концевику, 1 - от концевика
 					// 1 бит - Не откалибровано (0) / Откалибровано (1);
 					//0 бит - Простой (0) / Движение каретки (формирование ШИМ  сигнала для каретки) (1);

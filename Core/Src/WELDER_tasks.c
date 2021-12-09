@@ -54,7 +54,7 @@ void vKey_Action(void *pvParameters)
 {
 	uint8_t KeyPressed; // Номер нажатой кнопки или комбинации кнопок
 	uint8_t beep_mode_send = beep_click; // Режим работы бипера
-	uint8_t Cal = Calibrated; // Передача команды калибровка
+	uint8_t Cal = 0; // Передача команды калибровка
 	uint8_t Run; // Переменная для передачи команды начало варки
 	uint8_t Carriage_cmd = Cmd_CarriageGoTo; //Передача команды для начала движения каретки в заданную точку
 
@@ -395,7 +395,7 @@ void vKey_Action(void *pvParameters)
 				case press_long_Up:
 				{
 					xQueueSendToBack( qBeepMode, &beep_mode_send, 0 ); // Звук нажатия
-					if (WelderUnit.Speed < SPEED_MAX- 20 ) // Проверка на попадание в допустимый диапазон значений
+					if (WelderUnit.Speed < SPEED_MAX - 20 ) // Проверка на попадание в допустимый диапазон значений
 					{
 						WelderUnit.Speed += 20; // Дейсвия при длинном нажатии
 					}
@@ -412,8 +412,6 @@ void vKey_Action(void *pvParameters)
 
 			//WelderUnit.IndicatorPanel.LEDsState &= ~LED_AUTO; // Отключении индикации режима АВТО
 			WelderUnit.IndicatorPanel.LEDsState |= LED_PARKING; // Отображение что выбран режим калибровки
-
-
 
 			break;
 		}
@@ -465,7 +463,26 @@ void vKey_Action(void *pvParameters)
 			{
 			case WELDER_MODE_CALIBRATION:
 			{
-				xQueueSendToBack( qWelderCalibrated, &Cal, 0 ); // Начать калибровку
+				if (WelderUnit.State & WELDER_CLIBRATION_PROCESS)
+				{
+					WelderUnit.State &= ~WELDER_CLIBRATION_PROCESS; // Запретить калибровку
+
+					xSemaphoreGive(xSemaphore_Calibration);
+					vTaskDelay(10);
+					xSemaphoreGive(xSemaphore_Calibration);
+					vTaskDelay(10);
+					xSemaphoreGive(xSemaphore_Calibration);
+					vTaskDelay(10);
+					xSemaphoreGive(xSemaphore_Calibration);
+					vTaskDelay(10);
+				}
+				else
+				{
+					WelderUnit.State |= WELDER_CLIBRATION_PROCESS; // Разрешить калибровку
+					Cal = Calibrated;
+					xQueueSendToBack( qWelderCalibrated, &Cal, 0 ); // Начать калибровку
+				}
+
 				break;
 			}
 
@@ -637,7 +654,7 @@ void vWelder_Run(void *pvParameters)
 	{
 		xQueueReceive(qWelderRun, &lReceivedValue, portMAX_DELAY ); // Ожидание команды на начало варки
 
-		if (lReceivedValue == Welder_Run && ((WelderUnit.State & 0x02) == 0x02) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) ) // Если пришла команда на начло варки и каретка откалибрована и задняя дверца закрыта
+		if (lReceivedValue == Welder_Run && (WelderUnit.State & WELDER_MOVE_ENABLE) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) ) // Если пришла команда на начло калибровки и движение каретки разрешено и задняя дверца закрыта
 		{
 			beep = beep_1short;
 			xQueueSendToBack( qBeepMode, &beep, 0 ); // Звук нажатия
@@ -723,8 +740,8 @@ void vCarriage_Calibration(void *pvParameters)
 	{
 		xQueueReceive(qWelderCalibrated, &lReceivedValue, portMAX_DELAY ); // Ждать команды на начало калибровки
 
-		if (lReceivedValue == Calibrated)
-		{
+		if (lReceivedValue == Calibrated && (WelderUnit.State & 0x10) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) && ((WelderUnit.State & WELDER_CLIBRATION_PROCESS))) // Если пришла команда на калибровку и движение каретки разрешено и задняя дверца закрыта
+		{																																										// и если калибровка разрешена
 			WELDER_HEAD_UP // Поднять головку
 			vTaskDelay(100 / portTICK_RATE_MS); // Ожидание подъема головки
 
@@ -741,26 +758,35 @@ void vCarriage_Calibration(void *pvParameters)
 
 			Carriage_Move(0, 0, 1); // Стоп
 
-			Carriage_Move(CALIBRATION_PHASE_SPEED_2, 1, 1); // Отъехать немного назад
-			vTaskDelay(1000 / portTICK_RATE_MS);
+				if ((WelderUnit.State & 0x10) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) && ((WelderUnit.State & WELDER_CLIBRATION_PROCESS)) ) // Если движение каретки разрешено и задняя дверца закрыта
+				{
+					Carriage_Move(CALIBRATION_PHASE_SPEED_2, 1, 1); // Отъехать немного назад
+					vTaskDelay(1000 / portTICK_RATE_MS);
 
-			Carriage_Move(0, 0, 1); // Стоп
+					Carriage_Move(0, 0, 1); // Стоп
 
-			vTaskDelay(100/ portTICK_RATE_MS);
+					vTaskDelay(100/ portTICK_RATE_MS);
 
-			Carriage_Move(CALIBRATION_PHASE_SPEED_3, 0, 1); // Начать перемещение каретки в сторону концевика
+					Carriage_Move(CALIBRATION_PHASE_SPEED_3, 0, 1); // Начать перемещение каретки в сторону концевика
 
-			// По какой-то причине при первой попытке взять 2-й семафор он берется (даже если не выдан). Потому семафор берется дважды
-			xSemaphoreTake( xSemaphore_Calibration, portMAX_DELAY ); // Попытка взять семафор по прерыванию срабатывания концевика
-			xSemaphoreTake( xSemaphore_Calibration, portMAX_DELAY );
 
-			Carriage_Move(0, 0, 1); // Стоп
 
-			WelderUnit.State |= 1<<1; //1 бит - Откалибровано
+							// По какой-то причине при первой попытке взять 2-й семафор он берется (даже если не выдан). Потому семафор берется дважды
+							xSemaphoreTake( xSemaphore_Calibration, portMAX_DELAY ); // Попытка взять семафор по прерыванию срабатывания концевика
+							xSemaphoreTake( xSemaphore_Calibration, portMAX_DELAY );
 
-			WelderUnit.Position = 0; // Позиция каретки
+							Carriage_Move(0, 0, 1); // Стоп
 
-			WelderUnit.Mode = WELDER_MODE_MANUAL; // После калибровки режим работы аппарата - ручной.
+							if ((WelderUnit.State & 0x10) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) && ((WelderUnit.State & WELDER_CLIBRATION_PROCESS)) )
+							{
+
+							WelderUnit.State |= 1<<1; //1 бит - Откалибровано
+
+							WelderUnit.Position = 0; // Позиция каретки
+
+							WelderUnit.Mode = WELDER_MODE_MANUAL; // После калибровки режим работы аппарата - ручной.
+						}
+				}
 		}
 
 	}
