@@ -11,7 +11,7 @@ PCB_WELDER.c:272:6:PCB_KeyScan	8	static
 PCB_WELDER.c:278:6:PCB_InputsScan	8	static
 PCB_WELDER.c:309:6:PCB_OutputControl	8	static
 PCB_WELDER.c:356:6:HAL_GPIO_EXTI_Callback	16	static
-PCB_WELDER.c:444:6:SaveProgramToFlash2	16	static
-PCB_WELDER.c:472:6:ReadProgramFromFlash2	32	static
-PCB_WELDER.c:524:6:ReadProgramFromFlash	32	static
-PCB_WELDER.c:564:6:PCB_LEDs_OUT	16	static
+PCB_WELDER.c:453:6:SaveProgramToFlash2	16	static
+PCB_WELDER.c:481:6:ReadProgramFromFlash2	32	static
+PCB_WELDER.c:533:6:ReadProgramFromFlash	32	static
+PCB_WELDER.c:573:6:PCB_LEDs_OUT	16	static

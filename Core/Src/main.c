@@ -151,7 +151,7 @@ int main(void)
   /* USER CODE END RTOS_EVENTS */
 
   /* Start scheduler */
-  //osKernelStart();
+  osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
@@ -388,7 +388,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : iCarriageStop_Pin */
   GPIO_InitStruct.Pin = iCarriageStop_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(iCarriageStop_GPIO_Port, &GPIO_InitStruct);
 

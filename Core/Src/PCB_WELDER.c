@@ -423,7 +423,16 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 			  xSemaphoreGiveFromISR(xSemaphore_Calibration, &xHigherPriorityTaskWoken2);
 
-			  WelderUnit.State |= 1<<3; // 3 бит - Состояние вывода iCarriageStop, 1 - коневик нажат кареткой
+			  if (HAL_GPIO_ReadPin(iCarriageStop_GPIO_Port, iCarriageStop_Pin))
+			  {
+				  WelderUnit.State |= 1<<3; // 3 бит - Состояние вывода iCarriageStop, 1 - коневик нажат кареткой
+			  }
+			  else
+			  {
+				  WelderUnit.State &= ~0x08; // 3 бит - Состояние вывода iCarriageStop, 0 - коневик отжат
+			  }
+
+
 
 
 		if( xHigherPriorityTaskWoken2 == pdTRUE )

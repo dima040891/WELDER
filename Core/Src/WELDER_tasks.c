@@ -467,6 +467,15 @@ void vKey_Action(void *pvParameters)
 				{
 					WelderUnit.State &= ~WELDER_CLIBRATION_PROCESS; // Запретить калибровку
 
+					if (WelderUnit.Calibration_level == 02)
+					{
+						Carriage_Move(0, 0, 1); // Стоп
+						WelderUnit.Calibration_level = 05; // Калибровка остановлена
+					}
+
+					WelderUnit.Calibration_level = 05; // Калибровка остановлена
+
+
 					xSemaphoreGive(xSemaphore_Calibration);
 					vTaskDelay(10);
 					xSemaphoreGive(xSemaphore_Calibration);
@@ -475,6 +484,7 @@ void vKey_Action(void *pvParameters)
 					vTaskDelay(10);
 					xSemaphoreGive(xSemaphore_Calibration);
 					vTaskDelay(10);
+
 				}
 				else
 				{
@@ -741,9 +751,12 @@ void vCarriage_Calibration(void *pvParameters)
 		xQueueReceive(qWelderCalibrated, &lReceivedValue, portMAX_DELAY ); // Ждать команды на начало калибровки
 
 		if (lReceivedValue == Calibrated && (WelderUnit.State & 0x10) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) && ((WelderUnit.State & WELDER_CLIBRATION_PROCESS))) // Если пришла команда на калибровку и движение каретки разрешено и задняя дверца закрыта
-		{																																										// и если калибровка разрешена
+		{																																										// и если калибровка разрешена			WelderUnit.Calibration_level = 01; // Первая фаза калибровки - движение каретки к концевуику с большной скоростью
 			WELDER_HEAD_UP // Поднять головку
 			vTaskDelay(100 / portTICK_RATE_MS); // Ожидание подъема головки
+
+			WelderUnit.IndicatorPanel.LEDsState &= ~LED_PARKING; // индикации калибровки
+
 
 			WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация поднятой сварочной головки
 			WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN;
@@ -760,6 +773,7 @@ void vCarriage_Calibration(void *pvParameters)
 
 				if ((WelderUnit.State & 0x10) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) && ((WelderUnit.State & WELDER_CLIBRATION_PROCESS)) ) // Если движение каретки разрешено и задняя дверца закрыта
 				{
+					WelderUnit.Calibration_level = 02; // Вторая фаза калибровки - откат каретки от концевика в течении некторого времени
 					Carriage_Move(CALIBRATION_PHASE_SPEED_2, 1, 1); // Отъехать немного назад
 					vTaskDelay(1000 / portTICK_RATE_MS);
 
@@ -767,25 +781,40 @@ void vCarriage_Calibration(void *pvParameters)
 
 					vTaskDelay(100/ portTICK_RATE_MS);
 
+					if (WelderUnit.Calibration_level == 02) // Если фаза калибровки 2 (а не 05, что значит остановить калибровку)
+					{
+
+					WelderUnit.Calibration_level = 03; // Третья фаза калибровки - медленное движение каретки к концевуику на низкой скорости
+
 					Carriage_Move(CALIBRATION_PHASE_SPEED_3, 0, 1); // Начать перемещение каретки в сторону концевика
 
+					// По какой-то причине при первой попытке взять 2-й семафор он берется (даже если не выдан). Потому семафор берется дважды
+					xSemaphoreTake( xSemaphore_Calibration, portMAX_DELAY ); // Попытка взять семафор по прерыванию срабатывания концевика
+					xSemaphoreTake( xSemaphore_Calibration, portMAX_DELAY );
 
+					Carriage_Move(0, 0, 1); // Стоп
 
-							// По какой-то причине при первой попытке взять 2-й семафор он берется (даже если не выдан). Потому семафор берется дважды
-							xSemaphoreTake( xSemaphore_Calibration, portMAX_DELAY ); // Попытка взять семафор по прерыванию срабатывания концевика
-							xSemaphoreTake( xSemaphore_Calibration, portMAX_DELAY );
+					}
 
-							Carriage_Move(0, 0, 1); // Стоп
+					if ((WelderUnit.State & 0x10) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) && ((WelderUnit.State & WELDER_CLIBRATION_PROCESS)) && (WelderUnit.Calibration_level == 03) )
+					{
+						WelderUnit.Calibration_level = 04; // Откалибровано
 
-							if ((WelderUnit.State & 0x10) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE) && ((WelderUnit.State & WELDER_CLIBRATION_PROCESS)) )
-							{
+						WelderUnit.State |= 1<<1; //1 бит - Откалибровано
 
-							WelderUnit.State |= 1<<1; //1 бит - Откалибровано
+						WelderUnit.Position = 0; // Позиция каретки
 
-							WelderUnit.Position = 0; // Позиция каретки
+						WelderUnit.Mode = WELDER_MODE_MANUAL; // После калибровки режим работы аппарата - ручной.
 
-							WelderUnit.Mode = WELDER_MODE_MANUAL; // После калибровки режим работы аппарата - ручной.
-						}
+						WelderUnit.IndicatorPanel.LEDsState |= LED_PARKING; // Отображение что выбран режим калибровки
+					}
+
+					if (WelderUnit.Calibration_level  == 05) // Остановка калибровки
+					{
+						WelderUnit.Mode = 00; // Режим работа аппарата не выбран
+						WelderUnit.IndicatorPanel.LEDsState &= ~LED_PARKING; // индикации калибровки
+
+					}
 				}
 		}
 
