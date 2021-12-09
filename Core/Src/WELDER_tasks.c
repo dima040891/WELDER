@@ -807,6 +807,8 @@ void vCarriage_Calibration(void *pvParameters)
 						WelderUnit.Mode = WELDER_MODE_MANUAL; // После калибровки режим работы аппарата - ручной.
 
 						WelderUnit.IndicatorPanel.LEDsState |= LED_PARKING; // Отображение что выбран режим калибровки
+
+						WelderUnit.State |= WELDER_MOVE_ENABLE; // Разрешить движение каретки
 					}
 
 					if (WelderUnit.Calibration_level  == 05) // Остановка калибровки
