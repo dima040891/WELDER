@@ -514,18 +514,20 @@ void vKey_Action(void *pvParameters)
 					WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация поднятой сварочной головки
 					WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN;
 
+					WelderUnit.vWelder_Run_level = 8; // Остановка варки
+
 					// Далее идет очистка очередей задачи vWelder_Run. Задержка необхадима для переключения контеста задачи
 					Run = Carriage_Done;
 					xQueueSendToBack(qGoToResponse, &Run, 0 );
 					vTaskDelay(10);
 					xQueueSendToBack(qGoToResponse, &Run, 0 );
 					vTaskDelay(10);
-					xQueueSendToBack(qGoToResponse, &Run, 0 );
-					vTaskDelay(10);
-					xQueueSendToBack(qGoToResponse, &Run, 0 );
-					vTaskDelay(10);
-					xQueueSendToBack(qGoToResponse, &Run, 0 );
-					vTaskDelay(10);
+//					xQueueSendToBack(qGoToResponse, &Run, 0 );
+//					vTaskDelay(10);
+//					xQueueSendToBack(qGoToResponse, &Run, 0 );
+//					vTaskDelay(10);
+//					xQueueSendToBack(qGoToResponse, &Run, 0 );
+//					vTaskDelay(10);
 
 
 					xQueueReset(qGoToResponse); // Сброс очереди в исходное состояние
@@ -573,18 +575,20 @@ void vKey_Action(void *pvParameters)
 					WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация поднятой сварочной головки
 					WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN;
 
+					WelderUnit.vWelder_Run_level = 8; // Остановка варки
+
 					// Далее идет очистка очередей задачи vWelder_Run. Задержка необхадима для переключения контеста задачи
 					Run = Carriage_Done;
 					xQueueSendToBack(qGoToResponse, &Run, 0 );
 					vTaskDelay(10);
 					xQueueSendToBack(qGoToResponse, &Run, 0 );
 					vTaskDelay(10);
-					xQueueSendToBack(qGoToResponse, &Run, 0 );
-					vTaskDelay(10);
-					xQueueSendToBack(qGoToResponse, &Run, 0 );
-					vTaskDelay(10);
-					xQueueSendToBack(qGoToResponse, &Run, 0 );
-					vTaskDelay(10);
+//					xQueueSendToBack(qGoToResponse, &Run, 0 );
+//					vTaskDelay(10);
+//					xQueueSendToBack(qGoToResponse, &Run, 0 );
+//					vTaskDelay(10);
+//					xQueueSendToBack(qGoToResponse, &Run, 0 );
+//					vTaskDelay(10);
 
 
 					xQueueReset(qGoToResponse); // Сброс очереди в исходное состояние
@@ -671,49 +675,73 @@ void vWelder_Run(void *pvParameters)
 
 		if (WelderUnit.Position != WelderUnit.Xs) // Если текущая позиция каретки не равна стартовой позиции, то занять её
 		{
+			if (WelderUnit.vWelder_Run_level != 8)
+			{
+			WelderUnit.vWelder_Run_level = 01; // Движение каретки к точке начла варки
 			Carriage_cmd = Cmd_CarriageGoTo;
 			WelderUnit.GoTo = WelderUnit.Xs;
 			xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идти к
 
 			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
 			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки занята
+			}
 		}
 
 		if ((WelderUnit.Position == WelderUnit.Xs) && (WelderUnit.State & WELDER_MOVE_ENABLE)) // Если каретка на заданной позиции и движение каретки разрешено
 		{
 
+		if (WelderUnit.vWelder_Run_level != 8)
+		{
+		WelderUnit.vWelder_Run_level = 02; // Ожидание опускания сварочной головки
 		WELDER_HEAD_DOWN // Опустить головку
 		WelderUnit.IndicatorPanel.LEDsState |= LED_DOWN; // Индикация опущенной сварочной головки
+		vTaskDelay(500 / portTICK_RATE_MS); // Ожидание опускания головки
 		WelderUnit.IndicatorPanel.LEDsState &= ~LED_UP;
-		vTaskDelay(100 / portTICK_RATE_MS); // Ожидание опускания головки
-		SYNC_ARC_ON // Подача дуги
+		}
 
+		if (WelderUnit.vWelder_Run_level != 8)
+		{
+		WelderUnit.vWelder_Run_level = 03;
 		vTaskDelay(WelderUnit.Delay_s * 100 / portTICK_RATE_MS); // Выдержка времени для заполнения точки начала сварки аргоном.
+		SYNC_ARC_ON // Подача дуги
+		}
 
+		if (WelderUnit.vWelder_Run_level != 8)
+		{
+		WelderUnit.vWelder_Run_level = 04; // Движение к точке окончания варки
 		WelderUnit.GoTo = WelderUnit.Xf; // Указание точки осановки головки
 		Carriage_cmd = Cmd_CarriageGoTo; // Команда на начала движение каретки
 		xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идти к
 
-
 		xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
 		xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки занята
+		}
 
-
+		if (WelderUnit.vWelder_Run_level != 8)
+		{
+		WelderUnit.vWelder_Run_level = 05; // Выдерживание времеи конца варки
 		SYNC_ARC_OFF // Прекращение подачи дуги
-
 		vTaskDelay(WelderUnit.Delay_f * 100 / portTICK_RATE_MS); // Выдержка времени для заполнения точки останова сварки аргоном.
 
 		beep = beep_3short;
 		xQueueSendToBack( qBeepMode, &beep, 0 ); // Звук окончания варки
+		}
 
+		if (WelderUnit.vWelder_Run_level != 8)
+		{
+		WelderUnit.vWelder_Run_level = 06; // Ожидание подъема головки
 		WELDER_HEAD_UP // Поднять головку
-		vTaskDelay(100 / portTICK_RATE_MS); // Ожидание подъема головки
 
 		WelderUnit.IndicatorPanel.LEDsState |= LED_UP; // Индикация поднятой сварочной головки
+		vTaskDelay(500 / portTICK_RATE_MS); // Ожидание подъема головки
 		WelderUnit.IndicatorPanel.LEDsState &= ~LED_DOWN;
+		}
+
+		if (WelderUnit.vWelder_Run_level != 8)
 
 		// Откат каретки
-
+		WelderUnit.vWelder_Run_level = 07;
+		{
 			if (WelderUnit.Position > KICKBACK)
 			{
 				WelderUnit.GoTo = WelderUnit.Position -	KICKBACK;
@@ -726,6 +754,12 @@ void vWelder_Run(void *pvParameters)
 			Carriage_cmd = Cmd_CarriageGoTo;
 			xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идити к
 			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки ханята
+		}
+
+		if (WelderUnit.vWelder_Run_level == 8)
+		{
+			WelderUnit.vWelder_Run_level = 0;
+		}
 
 		}
 
