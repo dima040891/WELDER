@@ -5293,7 +5293,7 @@ void vCarriage_Calibration(void *pvParameters)
 			Carriage_Move(CALIBRATION_PHASE_SPEED_1, 0, 1); // Начать перемещение каретки в сторону концевика
  8002896:	2201      	movs	r2, #1
  8002898:	2100      	movs	r1, #0
- 800289a:	f44f 70c8 	mov.w	r0, #400	; 0x190
+ 800289a:	f44f 7016 	mov.w	r0, #600	; 0x258
  800289e:	f7fe faf3 	bl	8000e88 <Carriage_Move>
 
 			// Когда концевик замкнулся выдается семофор, что коретка дошла до самого начала
