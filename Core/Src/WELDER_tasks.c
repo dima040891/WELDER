@@ -1674,11 +1674,6 @@ void vKeyScan(void *pvParameters)
 				nKeyPressed = press_short_Program_L_and_R;
 				xQueueSendToBack( qKeyPress, &nKeyPressed, 0 ); // Передача номера нажатой клавиши
 
-//				Key.Program_ShortPress_L = 0;
-//				Key.Program_LongPress_L = 0;
-//
-//				Key.Program_ShortPress_R = 0;
-//				Key.Program_LongPress_R = 0;
 			}
 
 			Key.Program_ShortPress_L_and_R = 0;
@@ -1686,8 +1681,6 @@ void vKeyScan(void *pvParameters)
 
 
 		}
-
-
 
 		vTaskDelay(TIME_KEY_SCAN / portTICK_RATE_MS);
 
@@ -1701,19 +1694,15 @@ void vIndicatorPanel_Out(void *pvParameters)
 	WelderUnit.Xf = 90;
 	WelderUnit.Steps = 0;
 	WelderUnit.Delay_s = 10;
-	WelderUnit.Speed = 120;
+	WelderUnit.Speed = 600;
 	WelderUnit.Delay_f = 20;
-	WelderUnit.Program = 4;
+	WelderUnit.Program = 0;
 
 	WelderUnit.GoTo = WelderUnit.Xf;
 	WelderUnit.Position = 0;
 	WelderUnit.State = 0;
 
 	WelderUnit.IndicatorPanel.Brightness = 2;
-
-//	WelderUnit.IndicatorPanel.LEDsState |= LED_AUTO;
-//
-//	WelderUnit.IndicatorPanel.LEDsState |= LED_PARKING;
 
 	IndicatorPanel_Ini();
 
@@ -1726,11 +1715,6 @@ void vIndicatorPanel_Out(void *pvParameters)
 
 	for(;;)
 	{
-		//WelderUnit.Xs++;
-
-		//PCB_LEDs_OUT(PCB_LEDs_OUT(LEDs_val))
-
-
 
 		if (WelderUnit.State & 0x01) // Если каретка в движении то отображать ее позицию
 		{

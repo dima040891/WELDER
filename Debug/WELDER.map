@@ -5294,6 +5294,7 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_macro   0x000000000001b5c6      0x172 Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.o
  .debug_macro   0x000000000001b738      0x1ae Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
 
+<<<<<<< Updated upstream
 .debug_line     0x0000000000000000    0x18c51
  .debug_line    0x0000000000000000      0x88a Core/Src/MicrostepDriver.o
  .debug_line    0x000000000000088a      0xdb7 Core/Src/PCB_WELDER.o
@@ -5322,6 +5323,36 @@ LOAD c:/st/stm32cubeide_1.6.1/stm32cubeide/plugins/com.st.stm32cube.ide.mcu.exte
  .debug_line    0x00000000000172c5      0xae8 Middlewares/Third_Party/FreeRTOS/Source/timers.o
  .debug_line    0x0000000000017dad      0x64c Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.o
  .debug_line    0x00000000000183f9      0x858 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+=======
+.debug_line     0x0000000000000000    0x18bf1
+ .debug_line    0x0000000000000000      0x88a Core/Src/MicrostepDriver.o
+ .debug_line    0x000000000000088a      0xd8d Core/Src/PCB_WELDER.o
+ .debug_line    0x0000000000001617      0x83c Core/Src/STLED316S.o
+ .debug_line    0x0000000000001e53      0x762 Core/Src/STM32_flash.o
+ .debug_line    0x00000000000025b5     0x1776 Core/Src/WELDER_tasks.o
+ .debug_line    0x0000000000003d2b      0xa1e Core/Src/main.o
+ .debug_line    0x0000000000004749      0x732 Core/Src/stm32f1xx_hal_msp.o
+ .debug_line    0x0000000000004e7b      0x92c Core/Src/stm32f1xx_it.o
+ .debug_line    0x00000000000057a7      0x6fa Core/Src/system_stm32f1xx.o
+ .debug_line    0x0000000000005ea1       0x84 Core/Startup/startup_stm32f103rctx.o
+ .debug_line    0x0000000000005f25      0x927 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.o
+ .debug_line    0x000000000000684c      0xb0f Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.o
+ .debug_line    0x000000000000735b     0x1251 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.o
+ .debug_line    0x00000000000085ac      0xa04 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.o
+ .debug_line    0x0000000000008fb0      0xaf5 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.o
+ .debug_line    0x0000000000009aa5      0x9e6 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.o
+ .debug_line    0x000000000000a48b      0xd35 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.o
+ .debug_line    0x000000000000b1c0     0x1b9f Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_spi.o
+ .debug_line    0x000000000000cd5f     0x34ee Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.o
+ .debug_line    0x000000000001024d     0x1a31 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.o
+ .debug_line    0x0000000000011c7e     0x2458 Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o
+ .debug_line    0x00000000000140d6      0x70a Middlewares/Third_Party/FreeRTOS/Source/list.o
+ .debug_line    0x00000000000147e0     0x115c Middlewares/Third_Party/FreeRTOS/Source/queue.o
+ .debug_line    0x000000000001593c     0x1929 Middlewares/Third_Party/FreeRTOS/Source/tasks.o
+ .debug_line    0x0000000000017265      0xae8 Middlewares/Third_Party/FreeRTOS/Source/timers.o
+ .debug_line    0x0000000000017d4d      0x64c Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM3/port.o
+ .debug_line    0x0000000000018399      0x858 Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.o
+>>>>>>> Stashed changes
 
 .debug_str      0x0000000000000000    0xa27ad
  .debug_str     0x0000000000000000    0x9738c Core/Src/MicrostepDriver.o

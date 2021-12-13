@@ -37,6 +37,7 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  16 .debug_macro  0001b8e6  00000000  00000000  00042620  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
+<<<<<<< Updated upstream
  17 .debug_line   00018c51  00000000  00000000  0005df06  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  18 .debug_str    000a27ad  00000000  00000000  00076b57  2**0
@@ -44,6 +45,15 @@ Idx Name          Size      VMA       LMA       File off  Algn
  19 .comment      00000053  00000000  00000000  00119304  2**0
                   CONTENTS, READONLY
  20 .debug_frame  00005ae0  00000000  00000000  00119358  2**2
+=======
+ 17 .debug_line   00018bf1  00000000  00000000  0005def6  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 18 .debug_str    000a2784  00000000  00000000  00076ae7  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+ 19 .comment      00000053  00000000  00000000  0011926b  2**0
+                  CONTENTS, READONLY
+ 20 .debug_frame  00005ae0  00000000  00000000  001192c0  2**2
+>>>>>>> Stashed changes
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -7485,6 +7495,7 @@ void vKeyScan(void *pvParameters)
  800361e:	231f      	movs	r3, #31
  8003620:	73fb      	strb	r3, [r7, #15]
 				xQueueSendToBack( qKeyPress, &nKeyPressed, 0 ); // Передача номера нажатой клавиши
+<<<<<<< Updated upstream
  8003622:	4b0b      	ldr	r3, [pc, #44]	; (8003650 <vKeyScan+0xa28>)
  8003624:	6818      	ldr	r0, [r3, #0]
  8003626:	f107 010f 	add.w	r1, r7, #15
@@ -7494,6 +7505,15 @@ void vKeyScan(void *pvParameters)
 //
 //				Key.Program_ShortPress_R = 0;
 //				Key.Program_LongPress_R = 0;
+=======
+ 80035ce:	4b0b      	ldr	r3, [pc, #44]	; (80035fc <vKeyScan+0xa28>)
+ 80035d0:	6818      	ldr	r0, [r3, #0]
+ 80035d2:	f107 010f 	add.w	r1, r7, #15
+ 80035d6:	2300      	movs	r3, #0
+ 80035d8:	2200      	movs	r2, #0
+ 80035da:	f004 f855 	bl	8007688 <xQueueGenericSend>
+
+>>>>>>> Stashed changes
 			}
 
 			Key.Program_ShortPress_L_and_R = 0;
@@ -7505,9 +7525,8 @@ void vKeyScan(void *pvParameters)
  800363a:	2200      	movs	r2, #0
  800363c:	765a      	strb	r2, [r3, #25]
 
+
 		}
-
-
 
 		vTaskDelay(TIME_KEY_SCAN / portTICK_RATE_MS);
  800363e:	2014      	movs	r0, #20
@@ -7542,6 +7561,7 @@ void vIndicatorPanel_Out(void *pvParameters)
  800366a:	2200      	movs	r2, #0
  800366c:	81da      	strh	r2, [r3, #14]
 	WelderUnit.Delay_s = 10;
+<<<<<<< Updated upstream
  800366e:	4b28      	ldr	r3, [pc, #160]	; (8003710 <vIndicatorPanel_Out+0xbc>)
  8003670:	220a      	movs	r2, #10
  8003672:	729a      	strb	r2, [r3, #10]
@@ -7594,9 +7614,60 @@ void vIndicatorPanel_Out(void *pvParameters)
 
 		//PCB_LEDs_OUT(PCB_LEDs_OUT(LEDs_val))
 
+=======
+ 800361a:	4b28      	ldr	r3, [pc, #160]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 800361c:	220a      	movs	r2, #10
+ 800361e:	729a      	strb	r2, [r3, #10]
+	WelderUnit.Speed = 600;
+ 8003620:	4b26      	ldr	r3, [pc, #152]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003622:	f44f 7216 	mov.w	r2, #600	; 0x258
+ 8003626:	80da      	strh	r2, [r3, #6]
+	WelderUnit.Delay_f = 20;
+ 8003628:	4b24      	ldr	r3, [pc, #144]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 800362a:	2214      	movs	r2, #20
+ 800362c:	72da      	strb	r2, [r3, #11]
+	WelderUnit.Program = 0;
+ 800362e:	4b23      	ldr	r3, [pc, #140]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003630:	2200      	movs	r2, #0
+ 8003632:	819a      	strh	r2, [r3, #12]
 
+	WelderUnit.GoTo = WelderUnit.Xf;
+ 8003634:	4b21      	ldr	r3, [pc, #132]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003636:	885a      	ldrh	r2, [r3, #2]
+ 8003638:	4b20      	ldr	r3, [pc, #128]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 800363a:	811a      	strh	r2, [r3, #8]
+	WelderUnit.Position = 0;
+ 800363c:	4b1f      	ldr	r3, [pc, #124]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 800363e:	2200      	movs	r2, #0
+ 8003640:	809a      	strh	r2, [r3, #4]
+	WelderUnit.State = 0;
+ 8003642:	4b1e      	ldr	r3, [pc, #120]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003644:	2200      	movs	r2, #0
+ 8003646:	741a      	strb	r2, [r3, #16]
+
+	WelderUnit.IndicatorPanel.Brightness = 2;
+ 8003648:	4b1c      	ldr	r3, [pc, #112]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 800364a:	2202      	movs	r2, #2
+ 800364c:	771a      	strb	r2, [r3, #28]
+
+	IndicatorPanel_Ini();
+ 800364e:	f7fd fa35 	bl	8000abc <IndicatorPanel_Ini>
+
+	IndicatorPanel_SetBrightness(&WelderUnit.IndicatorPanel);
+ 8003652:	481b      	ldr	r0, [pc, #108]	; (80036c0 <vIndicatorPanel_Out+0xc0>)
+ 8003654:	f7fd fb1c 	bl	8000c90 <IndicatorPanel_SetBrightness>
+
+	vTaskDelay(100 / portTICK_RATE_MS);
+ 8003658:	2064      	movs	r0, #100	; 0x64
+ 800365a:	f004 fe5b 	bl	8008314 <vTaskDelay>
+//	SaveProgramToFlash2();
+>>>>>>> Stashed changes
+
+	for(;;)
+	{
 
 		if (WelderUnit.State & 0x01) // Если каретка в движении то отображать ее позицию
+<<<<<<< Updated upstream
  80036b0:	4b17      	ldr	r3, [pc, #92]	; (8003710 <vIndicatorPanel_Out+0xbc>)
  80036b2:	7c1b      	ldrb	r3, [r3, #16]
  80036b4:	f003 0301 	and.w	r3, r3, #1
@@ -7663,6 +7734,73 @@ void vIndicatorPanel_Out(void *pvParameters)
  800370e:	bf00      	nop
  8003710:	2000353c 	.word	0x2000353c
  8003714:	2000354e 	.word	0x2000354e
+=======
+ 800365e:	4b17      	ldr	r3, [pc, #92]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003660:	7c1b      	ldrb	r3, [r3, #16]
+ 8003662:	f003 0301 	and.w	r3, r3, #1
+ 8003666:	2b00      	cmp	r3, #0
+ 8003668:	d003      	beq.n	8003672 <vIndicatorPanel_Out+0x72>
+		{
+			WelderUnit.IndicatorPanel.Xs = WelderUnit.Position;
+ 800366a:	4b14      	ldr	r3, [pc, #80]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 800366c:	889a      	ldrh	r2, [r3, #4]
+ 800366e:	4b13      	ldr	r3, [pc, #76]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003670:	825a      	strh	r2, [r3, #18]
+		}
+
+		if (!(WelderUnit.State & 0x01)) // Если каретка не в движении то отображать точку начала варки
+ 8003672:	4b12      	ldr	r3, [pc, #72]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003674:	7c1b      	ldrb	r3, [r3, #16]
+ 8003676:	f003 0301 	and.w	r3, r3, #1
+ 800367a:	2b00      	cmp	r3, #0
+ 800367c:	d103      	bne.n	8003686 <vIndicatorPanel_Out+0x86>
+		{
+			WelderUnit.IndicatorPanel.Xs = WelderUnit.Xs;
+ 800367e:	4b0f      	ldr	r3, [pc, #60]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003680:	881a      	ldrh	r2, [r3, #0]
+ 8003682:	4b0e      	ldr	r3, [pc, #56]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003684:	825a      	strh	r2, [r3, #18]
+		}
+
+		WelderUnit.IndicatorPanel.Xf = WelderUnit.Xf;
+ 8003686:	4b0d      	ldr	r3, [pc, #52]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003688:	885a      	ldrh	r2, [r3, #2]
+ 800368a:	4b0c      	ldr	r3, [pc, #48]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 800368c:	829a      	strh	r2, [r3, #20]
+		WelderUnit.IndicatorPanel.Delay_s = WelderUnit.Delay_s;
+ 800368e:	4b0b      	ldr	r3, [pc, #44]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003690:	7a9a      	ldrb	r2, [r3, #10]
+ 8003692:	4b0a      	ldr	r3, [pc, #40]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003694:	759a      	strb	r2, [r3, #22]
+		WelderUnit.IndicatorPanel.Speed = WelderUnit.Speed;
+ 8003696:	4b09      	ldr	r3, [pc, #36]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 8003698:	88da      	ldrh	r2, [r3, #6]
+ 800369a:	4b08      	ldr	r3, [pc, #32]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 800369c:	831a      	strh	r2, [r3, #24]
+		WelderUnit.IndicatorPanel.Delay_f = WelderUnit.Delay_f;
+ 800369e:	4b07      	ldr	r3, [pc, #28]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 80036a0:	7ada      	ldrb	r2, [r3, #11]
+ 80036a2:	4b06      	ldr	r3, [pc, #24]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 80036a4:	75da      	strb	r2, [r3, #23]
+		WelderUnit.IndicatorPanel.Program = WelderUnit.Program;
+ 80036a6:	4b05      	ldr	r3, [pc, #20]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 80036a8:	899a      	ldrh	r2, [r3, #12]
+ 80036aa:	4b04      	ldr	r3, [pc, #16]	; (80036bc <vIndicatorPanel_Out+0xbc>)
+ 80036ac:	835a      	strh	r2, [r3, #26]
+
+
+		IndicatorPanel_SetValue(&WelderUnit.IndicatorPanel);
+ 80036ae:	4804      	ldr	r0, [pc, #16]	; (80036c0 <vIndicatorPanel_Out+0xc0>)
+ 80036b0:	f7fd fa1e 	bl	8000af0 <IndicatorPanel_SetValue>
+
+		vTaskDelay(100 / portTICK_RATE_MS);
+ 80036b4:	2064      	movs	r0, #100	; 0x64
+ 80036b6:	f004 fe2d 	bl	8008314 <vTaskDelay>
+		if (WelderUnit.State & 0x01) // Если каретка в движении то отображать ее позицию
+ 80036ba:	e7d0      	b.n	800365e <vIndicatorPanel_Out+0x5e>
+ 80036bc:	2000353c 	.word	0x2000353c
+ 80036c0:	2000354e 	.word	0x2000354e
+>>>>>>> Stashed changes
 
 08003718 <vBuzzer_beep>:
 	vTaskDelete(NULL);
