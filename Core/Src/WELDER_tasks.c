@@ -680,15 +680,15 @@ void vWelder_Run(void *pvParameters)
 			if (WelderUnit.vWelder_Run_level != 8)
 			{
 			WelderUnit.vWelder_Run_level = 01; // Движение каретки к точке начла варки
-			tempSpeed  = WelderUnit.Speed;
-			WelderUnit.Speed = CALIBRATION_PHASE_SPEED_1;
+			tempSpeed  = WelderUnit.Speed; // Сохранение значения скорости варки
+			WelderUnit.Speed = CALIBRATION_PHASE_SPEED_1; // Скорость доведения каретки до точки начала варки
 			Carriage_cmd = Cmd_CarriageGoTo;
 			WelderUnit.GoTo = WelderUnit.Xs;
 			xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идти к
 
 			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
 			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки занята
-			WelderUnit.Speed = tempSpeed;
+			WelderUnit.Speed = tempSpeed; // Восстановить скорость варки
 			}
 		}
 
@@ -749,7 +749,7 @@ void vWelder_Run(void *pvParameters)
 
 		tempSpeed  = WelderUnit.Speed;
 
-			if (WelderUnit.Position > KICKBACK)
+			if (WelderUnit.Position > KICKBACK && WelderUnit.Xs > KICKBACK) // Не проверено
 			{
 				WelderUnit.Speed =  CALIBRATION_PHASE_SPEED_1;
 				WelderUnit.GoTo = 0;

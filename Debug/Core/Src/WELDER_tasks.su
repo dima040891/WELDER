@@ -1,16 +1,8 @@
 WELDER_tasks.c:9:6:freeRTOS_Tasks_Ini	16	static
 WELDER_tasks.c:53:6:vKey_Action	24	static
 WELDER_tasks.c:660:6:vWelder_Run	24	static
-<<<<<<< Updated upstream
 WELDER_tasks.c:788:6:vCarriage_Calibration	24	static
 WELDER_tasks.c:874:6:vCarriage_GoTo	24	static
 WELDER_tasks.c:966:6:vKeyScan	24	static
-WELDER_tasks.c:1699:6:vIndicatorPanel_Out	16	static
-WELDER_tasks.c:1764:6:vBuzzer_beep	40	static
-=======
-WELDER_tasks.c:778:6:vCarriage_Calibration	24	static
-WELDER_tasks.c:864:6:vCarriage_GoTo	24	static
-WELDER_tasks.c:956:6:vKeyScan	24	static
-WELDER_tasks.c:1682:6:vIndicatorPanel_Out	16	static
-WELDER_tasks.c:1738:6:vBuzzer_beep	40	static
->>>>>>> Stashed changes
+WELDER_tasks.c:1692:6:vIndicatorPanel_Out	16	static
+WELDER_tasks.c:1748:6:vBuzzer_beep	40	static
