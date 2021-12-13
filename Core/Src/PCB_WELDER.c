@@ -298,11 +298,12 @@ void PCB_InputsScan (void)
 	if (HAL_GPIO_ReadPin(iBackDoor_GPIO_Port, iBackDoor_Pin)) // Если задняя дверца закрыта, то установить бит, иначе сбросить
 	{
 		WelderUnit.State |= WELDER_STATE_BACK_DOOR_CLOSE;
-		WELDER_HEAD_UP
+//		WELDER_HEAD_UP
 	}
 	else
 	{
 		WelderUnit.State &= ~WELDER_STATE_BACK_DOOR_CLOSE;
+		WELDER_HEAD_UP
 	}
 }
 

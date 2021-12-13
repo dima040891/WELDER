@@ -1,8 +1,8 @@
 WELDER_tasks.c:9:6:freeRTOS_Tasks_Ini	16	static
 WELDER_tasks.c:53:6:vKey_Action	24	static
-WELDER_tasks.c:660:6:vWelder_Run	24	static
-WELDER_tasks.c:778:6:vCarriage_Calibration	24	static
-WELDER_tasks.c:864:6:vCarriage_GoTo	24	static
-WELDER_tasks.c:956:6:vKeyScan	24	static
-WELDER_tasks.c:1689:6:vIndicatorPanel_Out	16	static
-WELDER_tasks.c:1754:6:vBuzzer_beep	40	static
+WELDER_tasks.c:662:6:vWelder_Run	24	static
+WELDER_tasks.c:780:6:vCarriage_Calibration	24	static
+WELDER_tasks.c:866:6:vCarriage_GoTo	24	static
+WELDER_tasks.c:958:6:vKeyScan	24	static
+WELDER_tasks.c:1691:6:vIndicatorPanel_Out	16	static
+WELDER_tasks.c:1756:6:vBuzzer_beep	40	static

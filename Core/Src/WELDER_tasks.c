@@ -552,8 +552,6 @@ void vKey_Action(void *pvParameters)
 					}
 
 
-
-
 				}
 				break;
 			}
@@ -564,7 +562,7 @@ void vKey_Action(void *pvParameters)
 
 				Run = Welder_Run;
 
-				if (WelderUnit.State & 0x01) // Если каретка уже движеся, то остановать её (остановка варки)
+				if ((WelderUnit.State & 0x01)  ) // Если каретка уже движеся, то остановать её (остановка варки)
 				{
 
 					WelderUnit.State &= ~WELDER_MOVE_ENABLE; // Заппретить движение каретки
@@ -600,16 +598,18 @@ void vKey_Action(void *pvParameters)
 
 					//UBaseType_t Q;
 
-					if (!(WelderUnit.State & WELDER_MOVE_ENABLE)) // Если движение было запрещено (остановлено), то просто разрешить движение каретки
+					if (!(WelderUnit.State & WELDER_MOVE_ENABLE) ) // Если движение было запрещено (остановлено), то просто разрешить движение каретки
 					{
 					WelderUnit.State |= WELDER_MOVE_ENABLE; // Разрешить движение каретки
 					}
 					else // иначе начать варку
 					{
+						if( ((WelderUnit.HolderState & WELDER_STATE_HOLDER_L)) && ((WelderUnit.HolderState & WELDER_STATE_HOLDER_R))) // Если обе части держателя затовки зажаты
+		{
 						Run = Welder_Run;
 						WelderUnit.State |= WELDER_MOVE_ENABLE; // Разрешить движение каретки
 						xQueueSendToBack(qWelderRun, &Run, 0 ); // Начать варку в автоматическом режиме
-
+		}
 					}
 
 
@@ -809,7 +809,7 @@ void vCarriage_Calibration(void *pvParameters)
 				{
 					WelderUnit.Calibration_level = 02; // Вторая фаза калибровки - откат каретки от концевика в течении некторого времени
 					Carriage_Move(CALIBRATION_PHASE_SPEED_2, 1, 1); // Отъехать немного назад
-					vTaskDelay(1000 / portTICK_RATE_MS);
+					vTaskDelay(500 / portTICK_RATE_MS);
 
 					Carriage_Move(0, 0, 1); // Стоп
 
