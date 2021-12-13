@@ -332,7 +332,7 @@ void PCB_OutputControl(void)
 
 	}
 
-	if(WelderUnit.HolderState & WELDER_STATE_HOLDER_L) // Если бит установлен, то зажать зажать заготвку, иначе отпустить
+	if((WelderUnit.HolderState & WELDER_STATE_HOLDER_L) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE)) // Если бит установлен, то зажать зажать заготвку, иначе отпустить
 	{
 		Valve_L_CLOSE
 	}
@@ -341,7 +341,7 @@ void PCB_OutputControl(void)
 		Valve_L_OPEN
 	}
 
-	if(WelderUnit.HolderState & WELDER_STATE_HOLDER_R) // Если бит установлен, то зажать зажать заготвку, иначе отпустить
+	if((WelderUnit.HolderState & WELDER_STATE_HOLDER_R) && (WelderUnit.State & WELDER_STATE_BACK_DOOR_CLOSE)) // Если бит установлен, то зажать зажать заготвку, иначе отпустить
 	{
 		Valve_R_CLOSE
 	}

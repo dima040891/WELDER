@@ -664,6 +664,8 @@ void vWelder_Run(void *pvParameters)
 
 	uint8_t beep;
 
+	uint16_t tempSpeed; // Для временного хранения значения скорости
+
 	for(;;)
 	{
 		xQueueReceive(qWelderRun, &lReceivedValue, portMAX_DELAY ); // Ожидание команды на начало варки
@@ -678,12 +680,15 @@ void vWelder_Run(void *pvParameters)
 			if (WelderUnit.vWelder_Run_level != 8)
 			{
 			WelderUnit.vWelder_Run_level = 01; // Движение каретки к точке начла варки
+			tempSpeed  = WelderUnit.Speed;
+			WelderUnit.Speed = CALIBRATION_PHASE_SPEED_1;
 			Carriage_cmd = Cmd_CarriageGoTo;
 			WelderUnit.GoTo = WelderUnit.Xs;
 			xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идти к
 
 			xQueueReceive(qGoToResponse, &lReceivedValue, 0 ); // Без этого не работает. В очереди откуда то берутся данные
 			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки занята
+			WelderUnit.Speed = tempSpeed;
 			}
 		}
 
@@ -738,22 +743,27 @@ void vWelder_Run(void *pvParameters)
 		}
 
 		if (WelderUnit.vWelder_Run_level != 8)
-
+		{
 		// Откат каретки
 		WelderUnit.vWelder_Run_level = 07;
-		{
+
+		tempSpeed  = WelderUnit.Speed;
+
 			if (WelderUnit.Position > KICKBACK)
 			{
-				WelderUnit.GoTo = WelderUnit.Position -	KICKBACK;
+				WelderUnit.Speed =  CALIBRATION_PHASE_SPEED_1;
+				WelderUnit.GoTo = 0;
 			}
 			else
 			{
+				WelderUnit.Speed =  CALIBRATION_PHASE_SPEED_1;
 				WelderUnit.GoTo = 0;
 			}
 
 			Carriage_cmd = Cmd_CarriageGoTo;
 			xQueueSendToBack( qWelderCmd, &Carriage_cmd, 0 ); // Идити к
 			xQueueReceive(qGoToResponse, &lReceivedValue, portMAX_DELAY ); // Ждать ответа от задачи CarriageGoTo о том что нужная позиция картеки ханята
+			WelderUnit.Speed = tempSpeed;
 		}
 
 		if (WelderUnit.vWelder_Run_level == 8)
@@ -809,7 +819,7 @@ void vCarriage_Calibration(void *pvParameters)
 				{
 					WelderUnit.Calibration_level = 02; // Вторая фаза калибровки - откат каретки от концевика в течении некторого времени
 					Carriage_Move(CALIBRATION_PHASE_SPEED_2, 1, 1); // Отъехать немного назад
-					vTaskDelay(500 / portTICK_RATE_MS);
+					vTaskDelay(250 / portTICK_RATE_MS);
 
 					Carriage_Move(0, 0, 1); // Стоп
 
